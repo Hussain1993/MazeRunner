@@ -138,6 +138,8 @@ public class Game extends SimpleBaseGameActivity  {
 	float previousTouchy=0;
 	int count = 10;
 	
+	boolean disableDrag = false;
+	
 	@Override
 	protected Scene onCreateScene() {
 		Sprite backgroundSprite = new Sprite(CAMERA_WIDTH/2, 100, mBackgroundTexttureRegion, getVertexBufferObjectManager());//Set the background of the screen.
@@ -156,29 +158,33 @@ public class Game extends SimpleBaseGameActivity  {
 			 */
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY){
 				// Make sure the ball hasn't collided with a wall
-				if (!thereIsCollision(this)){
-					//Every 10 consecutive non-colliding touch events, store the coordinates of the ball
-					if (count == 10){
-						previousTouchx = pSceneTouchEvent.getX() - this.getWidth() / 2;
-						previousTouchy = pSceneTouchEvent.getY() - this.getHeight() / 2;
-						count = 0;
-					}
-					
-					// Moves the ball. Again, not 100% sure how this works.
-					this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
-					count++;
+				if (!disableDrag) {
+					if (!thereIsCollision(this)){
+						//Every 10 consecutive non-colliding touch events, store the coordinates of the ball
+						if (count == 10){
+							previousTouchx = pSceneTouchEvent.getX() - this.getWidth() / 2;
+							previousTouchy = pSceneTouchEvent.getY() - this.getHeight() / 2;
+							count = 0;
+						}
+						
+						// Moves the ball. Again, not 100% sure how this works.
+						this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
+						count++;
 
-				}
-				else {
-					//If the ball collides, move to previous "safe" location.
-					count = 0;
-					this.setPosition(previousTouchx, previousTouchy);
-					/**
-					// Recreates grid, but isn't this a bit processor-intensive?
-					grid = new int[height][width]; 
-					// Exits screen
-					finish(); 
-					**/
+					}
+					else {
+						//If the ball collides, move to previous "safe" location.
+						count = 0;
+						this.setPosition(previousTouchx, previousTouchy);
+						/**
+						// Recreates grid, but isn't this a bit processor-intensive?
+						grid = new int[height][width]; 
+						// Exits screen
+						finish(); 
+						**/
+					}
+				} else {
+					disableDrag = false;
 				}
 				
 				/*
