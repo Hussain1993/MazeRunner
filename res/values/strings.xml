@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">MazeRunner</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Maze Runner</string>
+    <string name="Game">Start Game</string>
+    <string name="Score">Score</string>
+    <string name="Options">Options</string>
+    <string name="Exit">Exit</string>
+
+</resources>
