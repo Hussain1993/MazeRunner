@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class Score extends Activity {
 	
 	public static final String scorePrefName="GameScore";//sharedPref name
-	private NameScore scoreValue;// this variable stores the name and the score of the current player	
+	//private NameScore scoreValue;// this variable stores the name and the score of the current player	
 	private TableLayout scoreLayout;
 	private SharedPreferences score;
 	
@@ -35,6 +35,7 @@ public class Score extends Activity {
 		score = getSharedPreferences(scorePrefName,0);
 		
 		try{
+			@SuppressWarnings("unchecked")
 			Map<String,String> scoreMap = (Map<String, String>) score.getAll();
 			System.out.println("NO NULL POINTER EXCEPTION!!!!!");
 			List<String> scoreList = new ArrayList<String>(scoreMap.values());

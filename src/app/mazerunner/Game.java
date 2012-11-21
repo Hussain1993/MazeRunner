@@ -23,8 +23,6 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.debug.Debug;
 
-import android.util.Log;
-
 /**
  * This class is the actual game. 
  * As such, most game logic goes here.
