@@ -231,7 +231,7 @@ public class Game extends SimpleBaseGameActivity  {
                  * But we should probably change it to something a bit less
                  * quick
                  */
-                   horizontal_scroll = horizontal_scroll * 2;
+                   horizontal_scroll = (float) (horizontal_scroll * 1.15);
                    camera.setMaxVelocityX(horizontal_scroll);
             }
 	    });
