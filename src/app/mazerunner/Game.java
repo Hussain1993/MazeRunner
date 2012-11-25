@@ -1,11 +1,13 @@
 package app.mazerunner;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
@@ -14,14 +16,23 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
+import org.andengine.opengl.texture.TextureOptions;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.bitmap.BitmapTexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.adt.io.in.IInputStreamOpener;
+import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
+
+import android.graphics.Typeface;
+import android.util.Log;
 
 /**
  * This class is the actual game. 
@@ -30,6 +41,7 @@ import org.andengine.util.debug.Debug;
  * @author Sunny/Hussain/Hani
  */
 public class Game extends SimpleBaseGameActivity  {
+
 
 	// The grand-daddy object. Everything graphical takes place on the scene.
 	final Scene scene = new Scene();
@@ -69,11 +81,21 @@ public class Game extends SimpleBaseGameActivity  {
 	private ITextureRegion mBackgroundTexttureRegion;
 	private ITextureRegion mWallTextureRegion;
 	private ITextureRegion mBallTextureRegion;
+	private ITextureRegion mHUDBarTextureRegion;
+	
+	private Font fontScore;
+	private static final int FONT_SIZE = 48;
 	
 	private Sprite sBall;
 	private Sprite[][] sWall;
 	private ArrayList<Sprite> currentWalls;
 	
+	// Used for update score
+	private TimerHandler scoreTimer;
+	private int iterations = 0;
+	
+	private Text textScore;
+	private int score = 0;
 	/**
  	* Init method
  	*/
@@ -108,18 +130,39 @@ public class Game extends SimpleBaseGameActivity  {
 				public InputStream open() throws IOException {
 					return getAssets().open("gfx/tile_default.png");//Get the square image from the gfx folder be loaded
 				}
+				
+			
 			});
+			ITexture hudBar = new BitmapTexture(this.getTextureManager(), 
+					new IInputStreamOpener() {
+						@Override
+						public InputStream open() throws IOException {
+							return getAssets().open("gfx/hud_bar.png");
+						}
+				}
+			);
+			// Create font for HUD
+			final ITexture fontTexture = new BitmapTextureAtlas(
+					this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+			fontScore  = new Font(this.getFontManager(),
+					fontTexture, 
+					Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 
+					FONT_SIZE, true, Color.WHITE);
 			
 			/*
 			 * Load these the textures that you just got into VRAM, whatever the fuck that is
 			 * (Virtual RAM? I think data disappears upon 'finish'ing of activity - Sunny)
 			 */
+			fontScore.load();
+			hudBar.load();
 			wall.load();
 			background.load();
 			ball.load();
 			this.mBackgroundTexttureRegion = TextureRegionFactory.extractFromTexture(background);
 			this.mBallTextureRegion = TextureRegionFactory.extractFromTexture(ball);
 			this.mWallTextureRegion = TextureRegionFactory.extractFromTexture(wall);
+			this.mHUDBarTextureRegion = TextureRegionFactory.extractFromTexture(hudBar);
+		
 		} // END OF try block
 		catch (IOException e) {
 			Debug.e(e);
@@ -136,22 +179,40 @@ public class Game extends SimpleBaseGameActivity  {
 	float previousTouchy=0;
 	int count = 10;
 	
+	//Animation variables for the bounceback animation
 	boolean animating = false;
 	float currentX = 0.0f, currentY = 0.0f, endX = 0.0f, endY = 0.0f;
 	boolean subtractX = false, subtractY = false;
 	int totalTime = 0; float normalisedXInterval = 0.0f, normalisedYInterval = 0.0f;
 	
+	/**
+	 * GAME LOGIC GOES HERE
+	 */
 	@Override
 	protected Scene onCreateScene() {
 		Sprite backgroundSprite = new Sprite(CAMERA_WIDTH/2, 100, mBackgroundTexttureRegion, getVertexBufferObjectManager());//Set the background of the screen.
 		scene.attachChild(backgroundSprite);//Add the background to the scene
 
+		// HUD setup
+		HUD hudScore = new HUD();
+		
+		Sprite sprHUDBar = new Sprite(0,0, mHUDBarTextureRegion, getVertexBufferObjectManager());
+		sprHUDBar.setSize(CAMERA_WIDTH, CAMERA_HEIGHT/8);
+		textScore = new Text(16, 16, fontScore, "Score: 0", 
+				this.getVertexBufferObjectManager());
+		
+		hudScore.attachChild(sprHUDBar);
+		hudScore.attachChild(textScore);
+		
+		camera.setHUD(hudScore);
+		
+		// Create maze walls
 		createWalls();
 		
 		/**
 		 * All sprite creation
 		 */
-		sBall = new Sprite(5, 400, mBallTextureRegion, getVertexBufferObjectManager()){//Make the ball a sprite also
+		sBall = new Sprite(5, 400, mBallTextureRegion, getVertexBufferObjectManager()) { //Make the ball a sprite also
 			
 			/**
 			 * Called each time the screen is 'refreshed'.
@@ -283,16 +344,38 @@ public class Game extends SimpleBaseGameActivity  {
 	    TimerHandler speedTimer = new TimerHandler(SPEED_INCREASE_RATE, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-            	/* This is currently set to double the speed after every 5 seconds
-                 * But we should probably change it to something a bit less
-                 * quick
+            	/* Alter the formula below to change how speed
+            	 * increases
+            	 * Modify the SPEED_INCREASE_RATE variable (at the top of this
+            	 * class) to change how often the game speeds up
                  */
-                   horizontal_scroll = (float) (horizontal_scroll * 1.15);
+                   horizontal_scroll = horizontal_scroll 
+                		   + horizontal_scroll * 0.4f;
+                   
                    camera.setMaxVelocityX(horizontal_scroll);
+                   iterations++;
             }
 	    });
 	    scene.registerUpdateHandler(speedTimer);
+	   
+	    // Score Handler - score changes here
+	    scoreTimer = new TimerHandler(10/horizontal_scroll, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+            	score++;
+            	redrawScore();
+            	if (iterations < 20){
+            		// Rate of increase of score will need to stop growing 
+            		// after a while;
+            		// That's what 'iterations' is for
+            		scoreTimer.setTimerSeconds(10/horizontal_scroll);
+            	}
+            	
+            }
+	    });
+	    scene.registerUpdateHandler(scoreTimer);
 	    
+	  
 	    return scene;
 	} // END OF onCreateScene()
 
@@ -400,6 +483,14 @@ public class Game extends SimpleBaseGameActivity  {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Re-displays score on screen
+	 * Should be invoked whenever score is changed
+	 */
+	void redrawScore(){
+    	textScore.setText("Score: " + score);
 	}
 
 	/**
