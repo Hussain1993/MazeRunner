@@ -179,6 +179,12 @@ public class Game extends SimpleBaseGameActivity  {
 	float previousTouchy=0;
 	int count = 10;
 	
+	//Animation variables for the bounceback animation
+	boolean animating = false;
+	float currentX = 0.0f, currentY = 0.0f, endX = 0.0f, endY = 0.0f;
+	boolean subtractX = false, subtractY = false;
+	int totalTime = 0; float normalisedXInterval = 0.0f, normalisedYInterval = 0.0f;
+	
 	/**
 	 * GAME LOGIC GOES HERE
 	 */
@@ -206,7 +212,30 @@ public class Game extends SimpleBaseGameActivity  {
 		/**
 		 * All sprite creation
 		 */
-		sBall = new Sprite(5, 400, mBallTextureRegion, getVertexBufferObjectManager()){//Make the ball a sprite also
+		sBall = new Sprite(5, 400, mBallTextureRegion, getVertexBufferObjectManager()) { //Make the ball a sprite also
+			
+			/**
+			 * Called each time the screen is 'refreshed'.
+			 * We use this method to animate the ball from one position
+			 * to another when a collision is detected (ie for the
+			 * 'bounce-back' effect).
+			 */
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				if (animating) {
+					//Increment the values toward the final endpoint
+					if (!subtractX) currentX += normalisedXInterval; else currentX -= normalisedXInterval;
+					if (!subtractY) currentY += normalisedYInterval; else currentY -= normalisedYInterval;
+					
+					//Check if we're done moving the ball
+					boolean doneWithX = (!subtractX && currentX > endX) || (subtractX && currentX < endX);
+					boolean doneWithY = (!subtractY && currentY > endY) || (subtractY && currentY < endY);
+					animating = !(doneWithX && doneWithY); //If not, continue animating
+					
+					//Update the ball's position
+					this.setPosition(currentX, currentY);
+				}
+			}
+			
 			/**
 			 * Handles what occurs when the ball is touched.
 			 * I'm not really sure how it works yet...
@@ -214,29 +243,61 @@ public class Game extends SimpleBaseGameActivity  {
 			 */
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY){
 				// Make sure the ball hasn't collided with a wall
-				if (!thereIsCollision(this)){
-					//Every 10 consecutive non-colliding touch events, store the coordinates of the ball
-					if (count == 10){
-						previousTouchx = pSceneTouchEvent.getX() - this.getWidth() / 2;
-						previousTouchy = pSceneTouchEvent.getY() - this.getHeight() / 2;
-						count = 0;
-					}
-					
-					// Moves the ball. Again, not 100% sure how this works.
-					this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
-					count++;
+				
+				System.out.println("OnAreaTouched - x:" + (int)pSceneTouchEvent.getX() + ", y:" + (int)pSceneTouchEvent.getY() + ", localX:" + (int)pTouchAreaLocalX + ", localY:" + (int)pTouchAreaLocalY);
+				
+				
+				if (!animating) {
+					if (!thereIsCollision(this)){
+						//Every 10 consecutive non-colliding touch events, store the coordinates of the ball
+						if (count == 10){
+							previousTouchx = pSceneTouchEvent.getX() - this.getWidth() / 2;
+							previousTouchy = pSceneTouchEvent.getY() - this.getHeight() / 2;
+							count = 0;
+						}
+						
+						// Moves the ball. Again, not 100% sure how this works.
+						this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
+						count++;
 
-				}
-				else {
-					//If the ball collides, move to previous "safe" location.
-					count = 0;
-					this.setPosition(previousTouchx, previousTouchy);
-					/**
-					// Recreates grid, but isn't this a bit processor-intensive?
-					grid = new int[height][width]; 
-					// Exits screen
-					finish(); 
-					**/
+					}
+					else {
+						System.out.println("OnAreaTouched: Collision detected, trying to ignore touches for now");
+						//Collision detected
+						//If the ball collides, animate to previous "safe" location.
+						count = 0;
+						
+						//this.setPosition(previousTouchx, previousTouchy);
+						
+						//Set up variables for animation
+						animating = true;
+						currentX = pSceneTouchEvent.getX() - this.getWidth() / 2; //Get the current x position of the ball
+						currentY = pSceneTouchEvent.getY() - this.getHeight() / 2; //Get the current y position
+						endX = previousTouchx; //Get the final x position (previous safe location)
+						endY = previousTouchy; //Get the final y position
+						subtractX = endX < currentX; //Whether or not we are subtracting from or adding to the
+						subtractY = endY < currentY; //current value to get to the end-position
+						
+						/*
+						 * The line below calculates the time (in terms of number of frames)
+						 * needed for the ball to travel - this 'time' is obtained as a function
+						 * of the total distance to be travelled by the ball (simple Pythagorean a^2 + b^2 = c^2)
+						 * divided by 5. (We could experiment with this value, up to you guys)
+						 */
+						totalTime = (int)(Math.sqrt(Math.pow((endX - currentX), 2) + Math.pow((endY - currentY), 2)) / 5);
+						
+						//The number of x and y-coordinates to change each time the frame changes
+						normalisedXInterval = Math.abs(endX - currentX) / totalTime;
+						normalisedYInterval = Math.abs(endY - currentY) / totalTime;
+						
+						/**
+						// Recreates grid, but isn't this a bit processor-intensive?
+						grid = new int[height][width]; 
+						// Exits screen
+						finish(); 
+						**/
+						return false;
+					}
 				}
 				
 				/*
@@ -253,7 +314,7 @@ public class Game extends SimpleBaseGameActivity  {
 				if (this.getY() > LOWER_BOUNDARY){
 					this.setPosition(this.getX(), LOWER_BOUNDARY);
 				}
-				return true;
+				return false;
 			} // END OF onAreaTouched()
 		}; // END OF sBall definition
 		
