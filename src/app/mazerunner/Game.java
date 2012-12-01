@@ -1,9 +1,9 @@
 package app.mazerunner;
 
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.andengine.engine.camera.SmoothCamera;
@@ -19,10 +19,10 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
-import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.bitmap.BitmapTexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegionFactory;
@@ -32,7 +32,7 @@ import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Typeface;
-import android.util.Log;
+import app.mazerunner.gameclasses.PowerItem;
 
 /**
  * This class is the actual game. 
@@ -81,6 +81,8 @@ public class Game extends SimpleBaseGameActivity  {
 	private ITextureRegion mBackgroundTexttureRegion;
 	private ITextureRegion mWallTextureRegion;
 	private ITextureRegion mBallTextureRegion;
+	private ITextureRegion[] mPowerItemTextureRegion;
+	
 	private ITextureRegion mHUDBarTextureRegion;
 	
 	private Font fontScore;
@@ -90,9 +92,31 @@ public class Game extends SimpleBaseGameActivity  {
 	private Sprite[][] sWall;
 	private ArrayList<Sprite> currentWalls;
 	
+	private ArrayList<PowerItem> currentPowerItems;
+	
+	/*
+	 *  Types of power items!
+	 *  Change variable identifiers once we've decided on power items.
+	 *  Until then, I'm reserving numbers 0-4 for power-ups and
+	 *  numbers 5-9 for power-downs.
+	*/
+	public static final int TYPE_0 = 0;
+	public static final int TYPE_1 = 1;
+	public static final int TYPE_2 = 2;
+	public static final int TYPE_3 = 3;
+	public static final int TYPE_4 = 4;
+	public static final int TYPE_5 = 5;
+	public static final int TYPE_6 = 6;
+	public static final int TYPE_7 = 7;
+	public static final int TYPE_8 = 8;
+	public static final int TYPE_9 = 9;
+	
 	// Used for update score
 	private TimerHandler scoreTimer;
 	private int iterations = 0;
+	
+	int counterthingy = 0;
+	ITextureRegion[] powerUpTextureRegion;
 	
 	private Text textScore;
 	private int score = 0;
@@ -110,6 +134,18 @@ public class Game extends SimpleBaseGameActivity  {
 	@Override
 	protected void onCreateResources() {
 		try {
+			
+			// The power ups
+			mPowerItemTextureRegion = new ITextureRegion[10];
+			for (int i = 0; i < 10; i++){
+				BitmapTextureAtlas bta = new BitmapTextureAtlas(
+						this.getTextureManager(), 32, 32);
+				mPowerItemTextureRegion[i] = 
+						BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+								bta, this, "gfx/powerItem_" + i + ".png", 0, 0);
+
+				bta.load();
+			}
 			ITexture background = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
 				
 				@Override
@@ -133,6 +169,20 @@ public class Game extends SimpleBaseGameActivity  {
 				
 			
 			});
+			ITexture pUp = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+				
+				@Override
+				public InputStream open() throws IOException {
+					return getAssets().open("gfx/power_up.png");
+				}
+			});
+			ITexture pDown = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+				
+				@Override
+				public InputStream open() throws IOException {
+					return getAssets().open("gfx/power_down.png");
+				}
+			});
 			ITexture hudBar = new BitmapTexture(this.getTextureManager(), 
 					new IInputStreamOpener() {
 						@Override
@@ -150,17 +200,21 @@ public class Game extends SimpleBaseGameActivity  {
 					FONT_SIZE, true, Color.WHITE);
 			
 			/*
-			 * Load these the textures that you just got into VRAM, whatever the fuck that is
+			 * Load these the textures that you just got into VRAM, whatever that is
 			 * (Virtual RAM? I think data disappears upon 'finish'ing of activity - Sunny)
 			 */
 			fontScore.load();
 			hudBar.load();
 			wall.load();
+			pUp.load();
+			pDown.load();
 			background.load();
 			ball.load();
+			
 			this.mBackgroundTexttureRegion = TextureRegionFactory.extractFromTexture(background);
 			this.mBallTextureRegion = TextureRegionFactory.extractFromTexture(ball);
 			this.mWallTextureRegion = TextureRegionFactory.extractFromTexture(wall);
+		
 			this.mHUDBarTextureRegion = TextureRegionFactory.extractFromTexture(hudBar);
 		
 		} // END OF try block
@@ -184,7 +238,7 @@ public class Game extends SimpleBaseGameActivity  {
 	float currentX = 0.0f, currentY = 0.0f, endX = 0.0f, endY = 0.0f;
 	boolean subtractX = false, subtractY = false;
 	int totalTime = 0; float normalisedXInterval = 0.0f, normalisedYInterval = 0.0f;
-	
+		
 	/**
 	 * GAME LOGIC GOES HERE
 	 */
@@ -206,6 +260,17 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		camera.setHUD(hudScore);
 		
+		// Initialise arraylists that hold power ups/downs visible on screen
+		 currentPowerItems = new ArrayList<PowerItem>();
+		 		 
+		// Readies array that holds wall sprites
+		sWall = new Sprite[50][50]; 
+			
+		/* This ArrayList is used because when referencing walls for collision,
+		* we'll want to be careful about 'null' values in the array above.
+		*/
+		currentWalls = new ArrayList<Sprite>();
+			
 		// Create maze walls
 		createWalls();
 		
@@ -260,6 +325,7 @@ public class Game extends SimpleBaseGameActivity  {
 						this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, pSceneTouchEvent.getY() - this.getHeight() / 2);
 						count++;
 
+						checkPowerItemTouched();
 					}
 					else {
 						System.out.println("OnAreaTouched: Collision detected, trying to ignore touches for now");
@@ -362,7 +428,7 @@ public class Game extends SimpleBaseGameActivity  {
 	    scoreTimer = new TimerHandler(10/horizontal_scroll, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-            	score++;
+            	// score++;
             	redrawScore();
             	if (iterations < 20){
             		// Rate of increase of score will need to stop growing 
@@ -375,7 +441,39 @@ public class Game extends SimpleBaseGameActivity  {
 	    });
 	    scene.registerUpdateHandler(scoreTimer);
 	    
-	  
+	    // Destroys sprites that go off-screen
+	    TimerHandler resourceHandler = new TimerHandler(5.0f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+            	/* Use of iterator allows for concurrent modification
+            	 i.e. if we simply removed elements from the ArrayList,
+            	 the program would crash. */
+            	Iterator<Sprite> it = currentWalls.iterator();
+            	while (it.hasNext()){
+            		Sprite spr = it.next();
+            		// if wall is off screen
+            		if (camera.getCenterX()-spr.getX()-spr.getWidth() > CAMERA_WIDTH/2){
+                 		scene.detachChild(spr); // Goodbye sprite!
+                 		
+                 		it.remove(); 
+                 	}
+            	}
+            	// System.gc(); // Garbage collection
+            }
+	    });
+	    scene.registerUpdateHandler(resourceHandler);
+	    
+	    // Handles powers items
+	    TimerHandler powerHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+				
+            }
+	    });
+	    scene.registerUpdateHandler(powerHandler);
+	    
+	    // Power Item Handler
+	    
 	    return scene;
 	} // END OF onCreateScene()
 
@@ -383,7 +481,7 @@ public class Game extends SimpleBaseGameActivity  {
 	// height of grid
 	public static int height = 7;
 	// width of grid
-	public static int width = 20;
+	public static int width = 50;
 	
 	// 2-D grid; 1 values indicate path, 0 indicates wall
 	static int[][] grid = new int[height][width];
@@ -396,11 +494,11 @@ public class Game extends SimpleBaseGameActivity  {
 	 * Values of '1' within the array correspond to areas the ball can traverse.
 	 * Values of '0' correspond to walls.
 	 */
-	void createMazeArray(){
+	void createMazeArray(int x){
 		
 		// Starts in middle of height of grid
-		grid[height/2][0] = 1;
-		grid[height/2][1] = 1;
+		grid[x][0] = 1;
+		grid[x][1] = 1;
 		
 		// Goes through every column
 		for (int j = 1; j < width-1; j++){
@@ -440,19 +538,13 @@ public class Game extends SimpleBaseGameActivity  {
 		/* Creates the grid array using the Advanced Maze Generation Algorithm (TM) above 
 		 * perfected by the Alty Boys duo (Hani and Sunny). 
 		*/
-		this.createMazeArray(); 
+		this.createMazeArray(height/2); 
 		int xInterval = 128; // Each wall piece has a width of 128 pixels
 		int yInterval = 128; // ..and a height of 128 pixels. Hence these intervals.
 		int x = 0; // Starts off at the 
 		int y = 0; // Top-left corner of the screen
 		
-		// Readies array that holds wall sprites
-		sWall = new Sprite[50][50]; 
-		
-		/* This ArrayList is used because when referencing walls for collision,
-		 * we'll want to be careful about 'null' values in the array above.
-		*/
-		currentWalls = new ArrayList<Sprite>();
+
 		
 		/**
 		 * For loop that generates walls.
@@ -460,15 +552,35 @@ public class Game extends SimpleBaseGameActivity  {
 		 */
 		for (int i = 0; i < height; i++){
 			for (int j = 0; j < width; j++){
-				if(grid[i][j]!=1){
-				sWall[i][j] = new Sprite(x, y, mWallTextureRegion, getVertexBufferObjectManager());
-				currentWalls.add(sWall[i][j]);
-				scene.attachChild(sWall[i][j]);}
+				if(grid[i][j]!=1){ // If Wall
+					sWall[i][j] = new Sprite(x, y, mWallTextureRegion, getVertexBufferObjectManager());
+					currentWalls.add(sWall[i][j]);
+					scene.attachChild(sWall[i][j]);
+				}
+				else { // Power-ups/downs!
+					// Generate a random number between 0 and 99
+					int randomNo = random.nextInt(100); 
+					
+					/*
+					 * 1/10 chance an item will appear at a particular spot.
+					 * Out of that, a 1/10 chance of an item of a certain type  
+					 * appearing. 
+					 */
+					if (randomNo >= 0 && randomNo < 10){
+						PowerItem powerItem = new PowerItem(x+48, y+48,
+								mPowerItemTextureRegion[randomNo], 
+								getVertexBufferObjectManager(), randomNo);
+						scene.attachChild(powerItem);
+						currentPowerItems.add(powerItem);
+						
+					}
+				}
 				x = x + xInterval;
 			}
 			x = 0;
 			y = y + yInterval;
 		}
+	
 	} // END OF createWalls();
 	
 	/**
@@ -485,6 +597,26 @@ public class Game extends SimpleBaseGameActivity  {
 		return false;
 	}
 
+	/**
+	 * Handles what occurs when a power item is touched by the ball,
+	 * and removes said item
+	 */
+	void checkPowerItemTouched(){
+		Iterator<PowerItem> pIterator = currentPowerItems.iterator();
+		while (pIterator.hasNext()){
+			PowerItem powerItem =  pIterator.next();
+			// I love how this reads like natural language ^_^
+			if (sBall.collidesWith(powerItem)){ 
+				System.out.println("Collided with power-up");
+				scene.detachChild(powerItem);
+				// System.gc();
+				pIterator.remove();
+				System.out.println("Number of power-items: " + currentPowerItems.size());
+			}
+			
+		}
+	}
+	
 	/**
 	 * Re-displays score on screen
 	 * Should be invoked whenever score is changed
