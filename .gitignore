@@ -1,6 +1,4 @@
 /gen/app/mazerunner/R.java
-*.class
-<<<<<<< HEAD
 
 # built application files
 *.apk
@@ -12,12 +10,14 @@
 # Java class files
 *.class
 
+# generated files
+bin/
+gen/
+
+
 # Local configuration file (sdk path, etc)
 local.properties
 
 # Eclipse project files
 .classpath
 .project
-=======
-*.apk
->>>>>>> e7edc8c950d5ca9c4492c688d24a98c4a60d99ad
