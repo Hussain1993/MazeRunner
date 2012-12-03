@@ -1,55 +1,101 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
     android:background="@drawable/maze_runner_bg"
     android:gravity="center_vertical" >
 
-    <GridLayout
-        android:id="@+id/ButtonLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="47dp"
-        android:paddingLeft="@dimen/padding_large"
-        android:paddingRight="@dimen/padding_large" >
-
-        <Button
-            android:id="@+id/Game"
-            android:layout_width="128dp"
+        <GridLayout
+            android:id="@+id/ButtonLayout"
+            android:layout_marginLeft="55dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/buttonbg"
-            android:textColor="@android:color/holo_green_light" 
-            android:text="@string/Game" />
+            android:paddingLeft="@dimen/padding_large"
+            android:paddingRight="@dimen/padding_large" >
 
-        <Button
-            android:id="@+id/Score"
-            android:layout_width="128dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/buttonbg"
-            android:textColor="@android:color/holo_green_light" 
-            android:layout_gravity="left"
-            android:text="@string/Score" />
+            <Button
+                android:id="@+id/Game"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Game"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
 
-        <Button
-            android:id="@+id/Option"
-            android:layout_width="128dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/buttonbg"
-            android:textColor="@android:color/holo_green_light"  
-            android:layout_gravity="left"
-            android:text="@string/Options" />
+            <Button
+                android:id="@+id/Score"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Score"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
 
-        <Button
-            android:id="@+id/Exit"
-            android:layout_width="108dp"
+            <Button
+                android:id="@+id/Stats"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Stats"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/Extras"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Extras"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/SecondButtonLayout"
+            android:layout_marginLeft="55dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/buttonbg"
-            android:textColor="@android:color/holo_green_light"    
-            android:layout_gravity="left"
-            android:text="@string/Exit" />
-    </GridLayout>
-    
-</RelativeLayout>
+            android:paddingLeft="@dimen/padding_large"
+            android:paddingRight="@dimen/padding_large" >
+
+            <Button
+                android:id="@+id/empty1"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/Options"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Options"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/Exit"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/buttonbg"
+                android:text="@string/Exit"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16dp" />
+
+            <Button
+                android:id="@+id/empty2"
+                android:layout_width="128dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:visibility="invisible" />
+        </GridLayout>
+
+    </LinearLayout>

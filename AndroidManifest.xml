@@ -23,23 +23,40 @@
             </intent-filter>
         </activity>
         
-        <activity android:name="Game"
+        <activity 
+            android:name="Game"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main">
         </activity>
         
-        <activity android:name="Options"
+        <activity 
+            android:name="Options"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main">
         </activity>
         
-        <activity android:name="Score"
+        <activity 
+            android:name="Score"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main">
         </activity>
+        
+        <activity 
+      		android:name="Stats"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:label="@string/title_activity_main">
+       	</activity>
+       	
+       	<activity 
+      		android:name="Extras"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:label="@string/title_activity_main">
+       	</activity>
     </application>
 
 </manifest>
