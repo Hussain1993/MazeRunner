@@ -252,7 +252,7 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		Sprite sprHUDBar = new Sprite(0,0, mHUDBarTextureRegion, getVertexBufferObjectManager());
 		sprHUDBar.setSize(CAMERA_WIDTH, CAMERA_HEIGHT/8);
-		textScore = new Text(16, 16, fontScore, "Score: 0", 
+		textScore = new Text(16, 16, fontScore, "Score: 0", 500,
 				this.getVertexBufferObjectManager());
 		
 		hudScore.attachChild(sprHUDBar);
@@ -425,16 +425,16 @@ public class Game extends SimpleBaseGameActivity  {
 	    scene.registerUpdateHandler(speedTimer);
 	   
 	    // Score Handler - score changes here
-	    scoreTimer = new TimerHandler(10/horizontal_scroll, true, new ITimerCallback() {
+	    scoreTimer = new TimerHandler(0.25f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-            	// score++;
+            	score++;
             	redrawScore();
             	if (iterations < 20){
             		// Rate of increase of score will need to stop growing 
             		// after a while;
             		// That's what 'iterations' is for
-            		scoreTimer.setTimerSeconds(10/horizontal_scroll);
+            		// scoreTimer.setTimerSeconds(10/horizontal_scroll);
             	}
             	
             }
@@ -545,10 +545,8 @@ public class Game extends SimpleBaseGameActivity  {
 		int y = 0; // Top-left corner of the screen
 		
 
-		
 		/**
 		 * For loop that generates walls.
-		 * The numbers '7' and '10' will need to be altered to lengthen the maze, I think
 		 */
 		for (int i = 0; i < height; i++){
 			for (int j = 0; j < width; j++){
@@ -609,7 +607,6 @@ public class Game extends SimpleBaseGameActivity  {
 			if (sBall.collidesWith(powerItem)){ 
 				System.out.println("Collided with power-up");
 				scene.detachChild(powerItem);
-				// System.gc();
 				pIterator.remove();
 				System.out.println("Number of power-items: " + currentPowerItems.size());
 			}
@@ -622,7 +619,7 @@ public class Game extends SimpleBaseGameActivity  {
 	 * Should be invoked whenever score is changed
 	 */
 	void redrawScore(){
-    	textScore.setText("Score: " + score);
+    	textScore.setText("Score: " +score);
 	}
 
 	/**
