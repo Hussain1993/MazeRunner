@@ -32,6 +32,7 @@ import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Typeface;
+import app.mazerunner.gameclasses.Coin;
 import app.mazerunner.gameclasses.PowerItem;
 
 /**
@@ -59,7 +60,7 @@ public class Game extends SimpleBaseGameActivity  {
 	/*
 	 *  After every (SPEED_INCREASE_RATE) seconds, the speed of the ball
 	 *  will increase by a certain amount.
-	 *  See the 'speedTimer' object in the onCreateScene() class for more.
+	 *  See the 'speedTimer' object in the onCreateScene() method for more.
 	*/
 	private static final float SPEED_INCREASE_RATE = 5.0f;
 	
@@ -81,6 +82,9 @@ public class Game extends SimpleBaseGameActivity  {
 	private ITextureRegion mBackgroundTexttureRegion;
 	private ITextureRegion mWallTextureRegion;
 	private ITextureRegion mBallTextureRegion;
+	private ITextureRegion bCoinTextureRegion;
+	private ITextureRegion sCoinTextureRegion;
+	private ITextureRegion gCoinTextureRegion;
 	private ITextureRegion[] mPowerItemTextureRegion;
 	
 	private ITextureRegion mHUDBarTextureRegion;
@@ -93,6 +97,8 @@ public class Game extends SimpleBaseGameActivity  {
 	private ArrayList<Sprite> currentWalls;
 	
 	private ArrayList<PowerItem> currentPowerItems;
+	
+	private ArrayList<Coin> currentCoins;
 	
 	/*
 	 *  Types of power items!
@@ -110,6 +116,12 @@ public class Game extends SimpleBaseGameActivity  {
 	public static final int TYPE_7 = 7;
 	public static final int TYPE_8 = 8;
 	public static final int TYPE_9 = 9;
+	
+	
+	// Types of coins
+	public static final int BRONZE = 20;
+	public static final int SILVER = 21;
+	public static final int GOLD = 22;
 	
 	// Used for update score
 	private TimerHandler scoreTimer;
@@ -146,6 +158,34 @@ public class Game extends SimpleBaseGameActivity  {
 
 				bta.load();
 			}
+			
+			// Bronze coin
+			ITexture bCoin = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+				
+				@Override
+				public InputStream open() throws IOException {
+					return getAssets().open("gfx/coin_0.png");
+				}
+			});
+			
+			// Silver coin
+			ITexture sCoin = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+				
+				@Override
+				public InputStream open() throws IOException {
+					return getAssets().open("gfx/coin_1.png");
+				}
+			});
+			
+			// Gold coin
+			ITexture gCoin = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
+							
+			@Override
+				public InputStream open() throws IOException {
+						return getAssets().open("gfx/coin_2.png");
+					}
+			});
+			
 			ITexture background = new BitmapTexture(this.getTextureManager(), new IInputStreamOpener() {
 				
 				@Override
@@ -210,11 +250,16 @@ public class Game extends SimpleBaseGameActivity  {
 			pDown.load();
 			background.load();
 			ball.load();
+			bCoin.load();
+			sCoin.load();
+			gCoin.load();
 			
 			this.mBackgroundTexttureRegion = TextureRegionFactory.extractFromTexture(background);
 			this.mBallTextureRegion = TextureRegionFactory.extractFromTexture(ball);
 			this.mWallTextureRegion = TextureRegionFactory.extractFromTexture(wall);
-		
+			this.bCoinTextureRegion = TextureRegionFactory.extractFromTexture(bCoin);
+			this.sCoinTextureRegion = TextureRegionFactory.extractFromTexture(sCoin);
+			this.gCoinTextureRegion = TextureRegionFactory.extractFromTexture(gCoin);		
 			this.mHUDBarTextureRegion = TextureRegionFactory.extractFromTexture(hudBar);
 		
 		} // END OF try block
@@ -263,6 +308,9 @@ public class Game extends SimpleBaseGameActivity  {
 		// Initialise arraylists that hold power ups/downs visible on screen
 		 currentPowerItems = new ArrayList<PowerItem>();
 		 		 
+		// and coins!
+		 currentCoins = new ArrayList<Coin>();
+		 
 		// Readies array that holds wall sprites
 		sWall = new Sprite[50][50]; 
 			
@@ -571,8 +619,38 @@ public class Game extends SimpleBaseGameActivity  {
 						scene.attachChild(powerItem);
 						currentPowerItems.add(powerItem);
 						
+					} 
+					else if (randomNo >= 10 && randomNo < 18){
+						// 5% chance of bronze coin appearing
+						Coin bronzeCoin = new Coin(x+48, y+48,
+								bCoinTextureRegion, 
+								getVertexBufferObjectManager(), 20);
+						scene.attachChild(bronzeCoin);
+						// Functionality for keeping track of coins?
+						currentCoins.add(bronzeCoin);
+						
 					}
+					
+					else if (randomNo >=20 && randomNo < 23){
+						// 3% chance of silver coin
+						Coin silverCoin = new Coin(x+48, y+48,
+								sCoinTextureRegion, 
+								getVertexBufferObjectManager(), 21);
+						scene.attachChild(silverCoin);
+						currentCoins.add(silverCoin);
+					}
+					else if (randomNo >= 30 && randomNo < 31){
+						// 1% chance of gold coin appearing
+						Coin goldCoin = new Coin(x+48, y+48,
+								gCoinTextureRegion, 
+								getVertexBufferObjectManager(), 22);
+						scene.attachChild(goldCoin);
+						currentCoins.add(goldCoin);
+						
+					}
+					
 				}
+				
 				x = x + xInterval;
 			}
 			x = 0;
@@ -605,10 +683,38 @@ public class Game extends SimpleBaseGameActivity  {
 			PowerItem powerItem =  pIterator.next();
 			// I love how this reads like natural language ^_^
 			if (sBall.collidesWith(powerItem)){ 
-				System.out.println("Collided with power-up");
+				
+				// Take powerItem's type and do shit with it
+				
+				// 
+				
+				//
 				scene.detachChild(powerItem);
 				pIterator.remove();
 				System.out.println("Number of power-items: " + currentPowerItems.size());
+			}
+			
+		}
+	}
+	
+	/**
+	 * Handles what occurs when a coin is touched by the ball,
+	 * and removes said coin
+	 */
+	void checkCoinTouched(){
+		Iterator<Coin> cIterator = currentCoins.iterator();
+		while (cIterator.hasNext()){
+			Coin coin =  cIterator.next();
+			// I love how this reads like natural language ^_^
+			if (sBall.collidesWith(coin)){ 
+				
+				// Take coin's type and do shit with it
+				
+				// 
+				
+				//
+				scene.detachChild(coin);
+				cIterator.remove();
 			}
 			
 		}
