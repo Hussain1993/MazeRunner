@@ -17,6 +17,9 @@ public class PowerItem extends Sprite {
 		type = t;
 	}
 	
+	public int getType(){
+		return this.type;
+	}
 
 	
 	

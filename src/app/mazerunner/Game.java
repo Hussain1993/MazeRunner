@@ -53,9 +53,10 @@ public class Game extends SimpleBaseGameActivity  {
 	private static int CAMERA_HEIGHT = 800;
 	
 	private static final float INITIAL_SCROLL = 20.0f;
-	
+
 	// Scrolling speed 
 	private static float horizontal_scroll = INITIAL_SCROLL;
+	private static float old_scroll = horizontal_scroll;
 	
 	/*
 	 *  After every (SPEED_INCREASE_RATE) seconds, the speed of the ball
@@ -63,6 +64,11 @@ public class Game extends SimpleBaseGameActivity  {
 	 *  See the 'speedTimer' object in the onCreateScene() method for more.
 	*/
 	private static final float SPEED_INCREASE_RATE = 5.0f;
+	
+	// Necessary for speedup/down power items
+	private boolean disableSpeedup = false;
+	
+	private TimerHandler speedFixer;
 	
 	// Sets the view of the map the game is played in
 	final SmoothCamera camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, horizontal_scroll, 0, 0);
@@ -106,12 +112,12 @@ public class Game extends SimpleBaseGameActivity  {
 	 *  Until then, I'm reserving numbers 0-4 for power-ups and
 	 *  numbers 5-9 for power-downs.
 	*/
-	public static final int TYPE_0 = 0;
+	public static final int SPEED_DOWN = 0;
 	public static final int TYPE_1 = 1;
 	public static final int TYPE_2 = 2;
 	public static final int TYPE_3 = 3;
 	public static final int TYPE_4 = 4;
-	public static final int TYPE_5 = 5;
+	public static final int SPEED_UP = 5;
 	public static final int TYPE_6 = 6;
 	public static final int TYPE_7 = 7;
 	public static final int TYPE_8 = 8;
@@ -357,8 +363,9 @@ public class Game extends SimpleBaseGameActivity  {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY){
 				// Make sure the ball hasn't collided with a wall
 				
-				System.out.println("OnAreaTouched - x:" + (int)pSceneTouchEvent.getX() + ", y:" + (int)pSceneTouchEvent.getY() + ", localX:" + (int)pTouchAreaLocalX + ", localY:" + (int)pTouchAreaLocalY);
+				// System.out.println("OnAreaTouched - x:" + (int)pSceneTouchEvent.getX() + ", y:" + (int)pSceneTouchEvent.getY() + ", localX:" + (int)pTouchAreaLocalX + ", localY:" + (int)pTouchAreaLocalY);
 				
+				// COMMENTED OUT FOR NOW - SUNNY
 				
 				if (!animating) {
 					if (!thereIsCollision(this)){
@@ -464,11 +471,13 @@ public class Game extends SimpleBaseGameActivity  {
             	 * Modify the SPEED_INCREASE_RATE variable (at the top of this
             	 * class) to change how often the game speeds up
                  */
+            	
+            	if (disableSpeedup== false){
                    horizontal_scroll = horizontal_scroll 
                 		   + horizontal_scroll * 0.4f;
-                   
-                   camera.setMaxVelocityX(horizontal_scroll);
-                   iterations++;
+            	}
+            	 camera.setMaxVelocityX(horizontal_scroll);
+                 iterations++;
             }
 	    });
 	    scene.registerUpdateHandler(speedTimer);
@@ -523,6 +532,24 @@ public class Game extends SimpleBaseGameActivity  {
 	    
 	    // Power Item Handler
 	    
+	    // Revert back to original speed after 5 seconds
+	     speedFixer = new TimerHandler(5.0f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+            	System.out.println("BEFORE: " + camera.getMaxVelocityX());
+            	horizontal_scroll = old_scroll;
+            	disableSpeedup = false;
+            	camera.setMaxVelocityX(horizontal_scroll);
+            	System.out.println("AFTER: " + camera.getMaxVelocityX());
+            	
+            	scene.unregisterUpdateHandler(pTimerHandler);
+            }
+	    });
+	    
+	    // SpeedupHandler
+	    
+	    
+	    // SpeeddownHandler
 	    return scene;
 	} // END OF onCreateScene()
 
@@ -685,9 +712,30 @@ public class Game extends SimpleBaseGameActivity  {
 			// I love how this reads like natural language ^_^
 			if (sBall.collidesWith(powerItem)){ 
 				
-				// Take powerItem's type and do shit with it
+				// Take powerItem's type and do stuff with it
+				int type = powerItem.getType();
 				
+				switch(type){
+				case SPEED_UP:
+					disableSpeedup = true;
+					old_scroll = horizontal_scroll;
+					horizontal_scroll = horizontal_scroll*2;
+					camera.setMaxVelocityX(horizontal_scroll);
+					scene.registerUpdateHandler(speedFixer);
+					break;
+				case SPEED_DOWN:
+					disableSpeedup = true;
+					old_scroll = horizontal_scroll;
+					System.out.println("SPEED BEFORE = " + camera.getMaxVelocityX());
+					horizontal_scroll = horizontal_scroll/2;
+					camera.setMaxVelocityX(horizontal_scroll);
+					System.out.println("SPEED AFTER = " + camera.getMaxVelocityX());
+					scene.registerUpdateHandler(speedFixer);
+					break;
+				 default: break;
+				}
 				// 
+			
 				
 				//
 				scene.detachChild(powerItem);
