@@ -1,14 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" 
-    android:background="@drawable/maze_runner_bg"
-    android:gravity="center_vertical" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:background="@drawable/maze_runner_bg" >
 
         <GridLayout
             android:id="@+id/ButtonLayout"
-            android:layout_marginLeft="55dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/padding_large"
@@ -57,11 +55,11 @@
 
         <GridLayout
             android:id="@+id/SecondButtonLayout"
-            android:layout_marginLeft="55dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/padding_large"
-            android:paddingRight="@dimen/padding_large" >
+            android:paddingRight="@dimen/padding_large"
+            android:layout_below="@+id/ButtonLayout" >
 
             <Button
                 android:id="@+id/empty1"
@@ -97,5 +95,4 @@
                 android:layout_gravity="left"
                 android:visibility="invisible" />
         </GridLayout>
-
-    </LinearLayout>
+</RelativeLayout>
