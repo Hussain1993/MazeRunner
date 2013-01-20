@@ -374,6 +374,7 @@ public class Game extends SimpleBaseGameActivity  {
 						count++;
 
 						checkPowerItemTouched();
+						checkCoinTouched();
 					}
 					else {
 						System.out.println("OnAreaTouched: Collision detected, trying to ignore touches for now");
