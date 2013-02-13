@@ -639,8 +639,10 @@ public class Game extends SimpleBaseGameActivity  {
 					 * 1/10 chance an item will appear at a particular spot.
 					 * Out of that, a 1/10 chance of an item of a certain type  
 					 * appearing. 
+					 * EDIT: Changed for now, as we have only implemented two power items at the moment
+					 * 
 					 */
-					if (randomNo >= 0 && randomNo < 10){
+					if (randomNo == 0 && randomNo == 5){
 						PowerItem powerItem = new PowerItem(x+48, y+48,
 								mPowerItemTextureRegion[randomNo], 
 								getVertexBufferObjectManager(), randomNo);
