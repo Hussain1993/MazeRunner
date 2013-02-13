@@ -326,7 +326,7 @@ public class Game extends SimpleBaseGameActivity  {
 		currentWalls = new ArrayList<Sprite>();
 			
 		// Create maze walls
-		createWalls();
+		createWalls(0, 0);
 		
 		/**
 		 * All sprite creation
@@ -550,6 +550,19 @@ public class Game extends SimpleBaseGameActivity  {
 	    
 	    
 	    // SpeeddownHandler
+	     
+	     // Handles powers items
+		    TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
+	            @Override
+	            public void onTimePassed(TimerHandler pTimerHandler) {
+					if (sBall.getX() > newX){
+						createWalls(newX, 0);
+					}
+	            }
+		    });
+		    scene.registerUpdateHandler(newGridHandler);
+		    
+		    
 	    return scene;
 	} // END OF onCreateScene()
 
@@ -610,15 +623,15 @@ public class Game extends SimpleBaseGameActivity  {
 		} // END OF for loop
 	} // END OF createMazeArray()
 
-	void createWalls(){
+	private int newX = 0;
+	
+	void createWalls(int x, int y){
 		/* Creates the grid array using the Advanced Maze Generation Algorithm (TM) above 
 		 * perfected by the Alty Boys duo (Hani and Sunny). 
 		*/
 		this.createMazeArray(height/2); 
 		int xInterval = 128; // Each wall piece has a width of 128 pixels
 		int yInterval = 128; // ..and a height of 128 pixels. Hence these intervals.
-		int x = 0; // Starts off at the 
-		int y = 0; // Top-left corner of the screen
 		
 
 		/**
@@ -686,6 +699,10 @@ public class Game extends SimpleBaseGameActivity  {
 			x = 0;
 			y = y + yInterval;
 		}
+		
+		newX = x;
+
+		System.out.println("NewX =" + newX);
 	
 	} // END OF createWalls();
 	
@@ -759,7 +776,7 @@ public class Game extends SimpleBaseGameActivity  {
 			// I love how this reads like natural language ^_^
 			if (sBall.collidesWith(coin)){ 
 				
-				// Take coin's type and do shit with it
+				// Take coin's type and do stuff with it
 				
 				// 
 				
