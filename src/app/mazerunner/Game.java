@@ -155,7 +155,7 @@ public class Game extends SimpleBaseGameActivity  {
 			
 			// The power ups
 			mPowerItemTextureRegion = new ITextureRegion[10];
-			for (int i = 0; i < 10; i++){
+			for (int i = 0; i < 10; i = i + 5){
 				BitmapTextureAtlas bta = new BitmapTextureAtlas(
 						this.getTextureManager(), 32, 32);
 				mPowerItemTextureRegion[i] = 
