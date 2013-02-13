@@ -552,7 +552,9 @@ public class Game extends SimpleBaseGameActivity  {
 	    // SpeeddownHandler
 	     
 	     // Handles powers items
-		    TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
+		   
+	     /*
+	     TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
 	            @Override
 	            public void onTimePassed(TimerHandler pTimerHandler) {
 					if (sBall.getX() > newX){
@@ -562,7 +564,7 @@ public class Game extends SimpleBaseGameActivity  {
 	            }
 		    });
 		    scene.registerUpdateHandler(newGridHandler);
-		    
+		  */  
 		    
 	    return scene;
 	} // END OF onCreateScene()
@@ -698,14 +700,14 @@ public class Game extends SimpleBaseGameActivity  {
 				x = x + xInterval;
 				
 			}
-			newX=x;
+		//	newX=x;
 			x = 0;
 			y = y + yInterval;
 		}
 		
 		
 
-		System.out.println("NewX =" + newX);
+		//System.out.println("NewX =" + newX);
 	
 	} // END OF createWalls();
 	
