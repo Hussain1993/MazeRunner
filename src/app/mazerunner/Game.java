@@ -556,6 +556,7 @@ public class Game extends SimpleBaseGameActivity  {
 	            @Override
 	            public void onTimePassed(TimerHandler pTimerHandler) {
 					if (sBall.getX() > newX){
+						System.out.println("Ball X = " + sBall.getX());
 						createWalls(newX, 0);
 					}
 	            }
@@ -695,12 +696,14 @@ public class Game extends SimpleBaseGameActivity  {
 				}
 				
 				x = x + xInterval;
+				
 			}
+			newX=x;
 			x = 0;
 			y = y + yInterval;
 		}
 		
-		newX = x;
+		
 
 		System.out.println("NewX =" + newX);
 	

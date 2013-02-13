@@ -15,14 +15,14 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 
 	private Button startGameButton;
-	private Button scoreButton;
 	private Button statsButton;
-	private Button extrasButton;
-	private Button optionsButton;
+	private Button storeButton;
+	//private Button optionsButton;
 	private Button exitButton;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	System.out.println("HElLO WORLD");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
@@ -39,56 +39,43 @@ public class MainActivity extends Activity {
 		});
         //================================================================================================    
         
-        //setup scoreButton
-        //================================================================================================
-        scoreButton=(Button) findViewById(R.id.Score);//find the startGame button by id
-        //add the onClickListener for the startGame
-        scoreButton.setOnClickListener(new OnClickListener() {
-			
-        	@Override
-			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), Score.class));
-			}
-		});
-        //=================================================================================================
-
         //setup statsButton
         //=================================================================================================
-        statsButton=(Button) findViewById(R.id.Stats);//find the startGame button by id
+        //statsButton=(Button) findViewById(R.id.Stats);//find the startGame button by id
         //add the onClickListener for the startGame
-        statsButton.setOnClickListener(new OnClickListener() {
+        //statsButton.setOnClickListener(new OnClickListener() {
 			
-        	@Override
-			public void onClick(View v) {
-        		startActivity(new Intent(getBaseContext(),Stats.class));
-			}
-		});
+        	//@Override
+			//public void onClick(View v) {
+        		//startActivity(new Intent(getBaseContext(),Stats.class));
+			//}
+		//});
         //=================================================================================================
 
-        //setup extrasButton
+        //setup storeButton
         //=================================================================================================
-        extrasButton=(Button) findViewById(R.id.Extras);//find the startGame button by id
+        //storeButton=(Button) findViewById(R.id.Store);//find the startGame button by id
         //add the onClickListener for the startGame
-        extrasButton.setOnClickListener(new OnClickListener() {
+        //storeButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(),Extras.class));
-			}
-		});
+			//@Override
+			//public void onClick(View v) {
+				//startActivity(new Intent(getBaseContext(),Extras.class));
+			//}
+		//});
         //=================================================================================================
         
         //setup optionsButton
         //=================================================================================================
-        optionsButton=(Button) findViewById(R.id.Options);//find the startGame button by id
+        //optionsButton=(Button) findViewById(R.id.Options);//find the startGame button by id
         //add the onClickListener for the startGame
-        optionsButton.setOnClickListener(new OnClickListener() {
+        //optionsButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), Options.class));
-			}
-		});
+			//@Override
+			//public void onClick(View v) {
+				//startActivity(new Intent(getBaseContext(), Options.class));
+			//}
+		//});
         //=================================================================================================
         
         //setup exitButton
