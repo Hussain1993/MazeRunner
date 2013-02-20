@@ -57,6 +57,7 @@ public class Game extends SimpleBaseGameActivity  {
     public static final String DISTANCE_OVERALL = "DISTANCE_OVERALL";
     public static final String DISTANCE_HIGHEST = "DISTANCE_HIGHEST";
     
+    public static final String BONUS = "BONUS";
 	// The grand-daddy object. Everything graphical takes place on the scene.
 	final Scene scene = new Scene();
 	/*
@@ -81,6 +82,8 @@ public class Game extends SimpleBaseGameActivity  {
 	// Necessary for speedup/down power items
 	private boolean disableSpeedup = false;
 	
+	// Double score
+	private boolean doubleScore = false;
 	private TimerHandler speedFixer;
 	
 	// Sets the view of the map the game is played in
@@ -126,7 +129,7 @@ public class Game extends SimpleBaseGameActivity  {
 	 *  numbers 5-9 for power-downs.
 	*/
 	public static final int SPEED_DOWN = 0;
-	public static final int TYPE_1 = 1;
+	public static final int DOUBLE_SCORE = 1;
 	public static final int TYPE_2 = 2;
 	public static final int TYPE_3 = 3;
 	public static final int TYPE_4 = 4;
@@ -154,6 +157,8 @@ public class Game extends SimpleBaseGameActivity  {
 	
 	int counterthingy = 0;
 	ITextureRegion[] powerUpTextureRegion;
+	
+	private TimerHandler doubleScoreTimer;
 	
 	// SCORE
 	private Text textScore;
@@ -190,9 +195,9 @@ public class Game extends SimpleBaseGameActivity  {
 			
 			// The power ups
 			mPowerItemTextureRegion = new ITextureRegion[10];
-			for (int i = 0; i < 10; i = i + 5){
+			for (int i = 0; i < 10; i++){
 				BitmapTextureAtlas bta = new BitmapTextureAtlas(
-						this.getTextureManager(), 32, 32);
+						this.getTextureManager(), 60, 60);
 				mPowerItemTextureRegion[i] = 
 						BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 								bta, this, "gfx/powerItem_" + i + ".png", 0, 0);
@@ -528,7 +533,7 @@ public class Game extends SimpleBaseGameActivity  {
 	    scoreTimer = new TimerHandler(0.25f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-            	score++;
+            	if (!doubleScore) score++; else score = score + 2;
             	redrawScore();
             	if (iterations < 20){
             		// Rate of increase of score will need to stop growing 
@@ -540,6 +545,15 @@ public class Game extends SimpleBaseGameActivity  {
             }
 	    });
 	    scene.registerUpdateHandler(scoreTimer);
+	    
+	    // Double score - after 20.0 seconds, turn off - score changes here
+	    doubleScoreTimer = new TimerHandler(20.0f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+            	doubleScore = false;
+            	scene.unregisterUpdateHandler(pTimerHandler);
+            }
+	    });
 	    
 	    // Destroys sprites that go off-screen
 	    TimerHandler resourceHandler = new TimerHandler(5.0f, true, new ITimerCallback() {
@@ -701,7 +715,7 @@ public class Game extends SimpleBaseGameActivity  {
 					 * EDIT: Changed for now, as we have only implemented two power items at the moment
 					 * 
 					 */
-					if (randomNo == 0){
+					if (randomNo == 0 || randomNo == 1){
 						PowerItem powerItem = new PowerItem(x+48, y+48,
 								mPowerItemTextureRegion[randomNo], 
 								getVertexBufferObjectManager(), randomNo);
@@ -799,6 +813,10 @@ public class Game extends SimpleBaseGameActivity  {
 					System.out.println("SPEED AFTER = " + camera.getMaxVelocityX());
 					scene.registerUpdateHandler(speedFixer);
 					break;
+				case DOUBLE_SCORE:
+					doubleScore = true;
+					scene.registerUpdateHandler(doubleScoreTimer);
+					break;
 				 default: break;
 				}
 				// 
@@ -882,6 +900,8 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		// Update total score throughout app life
 		editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
+		
+		editor.putInt(BONUS, 1);
 		
 		// Update coin values
 		editor.putInt(COINS_IN_HAND, userData.getInt(COINS_IN_HAND, 0) + coinTotal);
