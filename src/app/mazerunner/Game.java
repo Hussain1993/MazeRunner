@@ -493,13 +493,13 @@ public class Game extends SimpleBaseGameActivity  {
             
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-                    camera.setCenter(camera.getCenterX()+horizontal_scroll,camera.getCenterY());
+                   camera.setCenter(camera.getCenterX()+horizontal_scroll,camera.getCenterY());
+            	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
                     	lostTheGame();
-                    	
                     }
-                   
+                
             }
 	    });
 	    scene.registerUpdateHandler(scrollTimer);
@@ -613,6 +613,7 @@ public class Game extends SimpleBaseGameActivity  {
 
 
 	// height of grid
+	//public static int height = 7; // ORIGINAL WIDTH = 7
 	public static int height = 7;
 	// width of grid
 	public static int width = 50;
@@ -700,7 +701,7 @@ public class Game extends SimpleBaseGameActivity  {
 					 * EDIT: Changed for now, as we have only implemented two power items at the moment
 					 * 
 					 */
-					if (randomNo == 0 && randomNo == 5){
+					if (randomNo == 0){
 						PowerItem powerItem = new PowerItem(x+48, y+48,
 								mPowerItemTextureRegion[randomNo], 
 								getVertexBufferObjectManager(), randomNo);
