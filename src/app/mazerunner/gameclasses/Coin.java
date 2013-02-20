@@ -19,4 +19,8 @@ public class Coin extends Sprite {
 		type = t;
 	}
 	
+	public int getValue(){
+		return type;
+	}
+	
 }

@@ -95,7 +95,7 @@ public class Game extends SimpleBaseGameActivity  {
 	
 	private ITextureRegion mHUDBarTextureRegion;
 	
-	private Font fontScore;
+	private Font fontHUD;
 	private static final int FONT_SIZE = 48;
 	
 	private Sprite sBall;
@@ -129,6 +129,12 @@ public class Game extends SimpleBaseGameActivity  {
 	public static final int SILVER = 21;
 	public static final int GOLD = 22;
 	
+	// VALUES of coins
+	
+	public static final int BRONZE_VALUE = 1;
+	public static final int SILVER_VALUE = 2;
+	public static final int GOLD_VALUE = 3;
+	
 	// Used for update score
 	private TimerHandler scoreTimer;
 	private int iterations = 0;
@@ -136,8 +142,21 @@ public class Game extends SimpleBaseGameActivity  {
 	int counterthingy = 0;
 	ITextureRegion[] powerUpTextureRegion;
 	
+	// SCORE
 	private Text textScore;
 	private int score = 0;
+	
+	// COINS
+	
+	private int coinsBronze = 0;
+	
+	private int coinSilver = 0;
+	
+	private int coinGold = 0;
+	
+	private Text textCoin;
+	private int coinTotal;
+	
 	/**
  	* Init method
  	*/
@@ -240,7 +259,7 @@ public class Game extends SimpleBaseGameActivity  {
 			// Create font for HUD
 			final ITexture fontTexture = new BitmapTextureAtlas(
 					this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
-			fontScore  = new Font(this.getFontManager(),
+			fontHUD  = new Font(this.getFontManager(),
 					fontTexture, 
 					Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 
 					FONT_SIZE, true, Color.WHITE);
@@ -249,7 +268,7 @@ public class Game extends SimpleBaseGameActivity  {
 			 * Load these the textures that you just got into VRAM, whatever that is
 			 * (Virtual RAM? I think data disappears upon 'finish'ing of activity - Sunny)
 			 */
-			fontScore.load();
+			fontHUD.load();
 			hudBar.load();
 			wall.load();
 			pUp.load();
@@ -303,12 +322,16 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		Sprite sprHUDBar = new Sprite(0,0, mHUDBarTextureRegion, getVertexBufferObjectManager());
 		sprHUDBar.setSize(CAMERA_WIDTH, CAMERA_HEIGHT/8);
-		textScore = new Text(16, 16, fontScore, "Score: 0", 500,
+		textScore = new Text(16, 16, fontHUD, 
+				"Score: 0",
+				500,
 				this.getVertexBufferObjectManager());
+		
+		textCoin = new Text(CAMERA_WIDTH-384, 16, fontHUD, "Coins: 0", 500, this.getVertexBufferObjectManager());
 		
 		hudScore.attachChild(sprHUDBar);
 		hudScore.attachChild(textScore);
-		
+		hudScore.attachChild(textCoin);
 		camera.setHUD(hudScore);
 		
 		// Initialise arraylists that hold power ups/downs visible on screen
@@ -782,7 +805,22 @@ public class Game extends SimpleBaseGameActivity  {
 			if (sBall.collidesWith(coin)){ 
 				
 				// Take coin's type and do stuff with it
+				int coinValue = coin.getValue();
 				
+				// Depending on the type of coin, different value will be added to the total
+				switch (coinValue){
+				case BRONZE:
+					coinTotal = coinTotal + BRONZE_VALUE;
+					break;
+				case SILVER:
+					coinTotal = coinTotal + SILVER_VALUE;
+					break;
+				case GOLD:
+					coinTotal = coinTotal + GOLD_VALUE;
+					break;
+				default:
+					break;
+				}
 				// 
 				
 				//
@@ -798,7 +836,8 @@ public class Game extends SimpleBaseGameActivity  {
 	 * Should be invoked whenever score is changed
 	 */
 	void redrawScore(){
-    	textScore.setText("Score: " +score);
+    	textScore.setText("Score: " +score + "");
+    	textCoin.setText("Coins: " + coinTotal + "");
 	}
 
 	/**
