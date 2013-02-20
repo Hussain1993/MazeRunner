@@ -4,4 +4,44 @@
     android:layout_height="match_parent"
     android:background="@drawable/storebg" >
 
+    <TextView
+        android:id="@+id/bonus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:textColor="@android:color/holo_green_light"
+        android:text="Bonus: value"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ScrollView
+        android:id="@+id/singleGameSV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bonus"
+        android:layout_marginRight="47dp"
+        android:layout_marginTop="29dp"
+        android:layout_toLeftOf="@+id/bonus" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/lifetimeSV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/singleGameSV"
+        android:layout_marginLeft="19dp"
+        android:layout_toRightOf="@+id/bonus" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </LinearLayout>
+    </ScrollView>
+
 </RelativeLayout>

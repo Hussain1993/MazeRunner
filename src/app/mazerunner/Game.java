@@ -901,7 +901,7 @@ public class Game extends SimpleBaseGameActivity  {
 		// Update total score throughout app life
 		editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
 		
-		editor.putInt(BONUS, 1);
+		editor.putInt(BONUS,1);
 		
 		// Update coin values
 		editor.putInt(COINS_IN_HAND, userData.getInt(COINS_IN_HAND, 0) + coinTotal);
