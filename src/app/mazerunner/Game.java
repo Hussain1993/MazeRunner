@@ -278,7 +278,7 @@ public class Game extends SimpleBaseGameActivity  {
 			fontHUD  = new Font(this.getFontManager(),
 					fontTexture, 
 					Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 
-					FONT_SIZE, true, Color.WHITE);
+					FONT_SIZE, true, Color.CYAN);
 			
 			/*
 			 * Load these the textures that you just got into VRAM, whatever that is
@@ -338,6 +338,7 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		Sprite sprHUDBar = new Sprite(0,0, mHUDBarTextureRegion, getVertexBufferObjectManager());
 		sprHUDBar.setSize(CAMERA_WIDTH, CAMERA_HEIGHT/8);
+	//	sprHUDBar.setSize(CAMERA_WIDTH, 128);
 		textScore = new Text(16, 16, fontHUD, 
 				"Score: 0",
 				500,
@@ -635,7 +636,7 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		// Goes through every column
 		for (int j = 1; j < width-1; j++){
-			int i = 1;
+			int i = 2; // ORIGINAL VALUE IS 1
 			while (grid[i][j+1] != 1) { // Keeps trying to change numbers until there is at least one '1` to the right
                 if (grid[i][j] == 1){
                     int bla = random.nextInt(3);
@@ -662,7 +663,7 @@ public class Game extends SimpleBaseGameActivity  {
                     }
                 }
                 i++;
-                if (i == height-2) 	i = 1; // if bottom of grid is reached, return to top
+                if (i == height-2) 	i = 2; // if bottom of grid is reached, return to top ORIGINAL IS 1
 			}; // END OF while loop
 		} // END OF for loop
 	} // END OF createMazeArray()
@@ -805,7 +806,7 @@ public class Game extends SimpleBaseGameActivity  {
 				//
 				scene.detachChild(powerItem);
 				pIterator.remove();
-				System.out.println("Number of power-items: " + currentPowerItems.size());
+			//	System.out.println("Number of power-items: " + currentPowerItems.size());
 			}
 			
 		}
