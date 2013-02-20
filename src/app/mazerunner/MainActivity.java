@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
 	private Button startGameButton;
 	private Button statsButton;
 	private Button storeButton;
-	private Button optionsButton;
+	private Button achievementsButton;
 	private Button exitButton;
 	
     @Override
@@ -67,13 +67,13 @@ public class MainActivity extends Activity {
         
         //setup optionsButton
         //=================================================================================================
-        optionsButton=(Button) findViewById(R.id.Options);//find the startGame button by id
+        achievementsButton=(Button) findViewById(R.id.achievements);//find the startGame button by id
         //add the onClickListener for the startGame
-        optionsButton.setOnClickListener(new OnClickListener() {
+        achievementsButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), Options.class));
+				startActivity(new Intent(getBaseContext(), Achievements.class));
 			}
 		});
         //=================================================================================================
