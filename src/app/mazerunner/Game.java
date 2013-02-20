@@ -31,6 +31,7 @@ import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import app.mazerunner.gameclasses.Coin;
 import app.mazerunner.gameclasses.PowerItem;
@@ -43,7 +44,12 @@ import app.mazerunner.gameclasses.PowerItem;
  */
 public class Game extends SimpleBaseGameActivity  {
 
-
+	// PLAYGROUND
+    public static final String PREFS = "MyPrefsFile";
+    
+    public static final String SCORE_OVERALL = "SCORE_OVERALL";
+    public static final String COINS_OVERALL = "COINS_OVERALL";
+    
 	// The grand-daddy object. Everything graphical takes place on the scene.
 	final Scene scene = new Scene();
 	/*
@@ -157,6 +163,7 @@ public class Game extends SimpleBaseGameActivity  {
 	private Text textCoin;
 	private int coinTotal;
 	
+	private boolean lostTheGame = false;
 	/**
  	* Init method
  	*/
@@ -478,8 +485,9 @@ public class Game extends SimpleBaseGameActivity  {
                     camera.setCenter(camera.getCenterX()+horizontal_scroll,camera.getCenterY());
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    		lostTheGame();
-                    	}
+                    	lostTheGame();
+                    	
+                    }
                    
             }
 	    });
@@ -840,12 +848,28 @@ public class Game extends SimpleBaseGameActivity  {
     	textCoin.setText("Coins: " + coinTotal + "");
 	}
 
+	int lostCounter = 0;
 	/**
 	 * Controls what happens when one of the losing conditions occurs.
 	 */
 	void lostTheGame(){
-		horizontal_scroll = INITIAL_SCROLL;
-    	grid = new int[height][width]; 
-    	finish();
+		lostCounter++;
+		if (lostCounter == 1){
+			// RECORD DATA
+			SharedPreferences userData = this.getSharedPreferences(PREFS, 0);
+			SharedPreferences.Editor editor= userData.edit();
+			
+			editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
+			editor.putInt(COINS_OVERALL, userData.getInt(COINS_OVERALL, 0) + coinTotal);
+			
+			
+			editor.commit();
+			
+			
+			horizontal_scroll = INITIAL_SCROLL;
+	    	grid = new int[height][width]; 
+	    	finish();
+		}
+		
 	}
 } // END OF GAME class definition
