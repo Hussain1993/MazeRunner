@@ -48,7 +48,14 @@ public class Game extends SimpleBaseGameActivity  {
     public static final String PREFS = "MyPrefsFile";
     
     public static final String SCORE_OVERALL = "SCORE_OVERALL";
+    public static final String SCORE_HIGHEST = "SCORE_HIGHEST";
+    
+    public static final String COINS_IN_HAND = "COINS_IN_HAND";
     public static final String COINS_OVERALL = "COINS_OVERALL";
+    public static final String COINS_HIGHEST = "COINS_HIGHEST";
+ 
+    public static final String DISTANCE_OVERALL = "DISTANCE_OVERALL";
+    public static final String DISTANCE_HIGHEST = "DISTANCE_HIGHEST";
     
 	// The grand-daddy object. Everything graphical takes place on the scene.
 	final Scene scene = new Scene();
@@ -152,6 +159,7 @@ public class Game extends SimpleBaseGameActivity  {
 	private Text textScore;
 	private int score = 0;
 	
+	
 	// COINS
 	
 	private int coinsBronze = 0;
@@ -161,6 +169,7 @@ public class Game extends SimpleBaseGameActivity  {
 	private int coinGold = 0;
 	
 	private Text textCoin;
+
 	private int coinTotal;
 	
 	private boolean lostTheGame = false;
@@ -477,6 +486,7 @@ public class Game extends SimpleBaseGameActivity  {
 		// Seems to improve touch response
 		scene.setTouchAreaBindingOnActionDownEnabled(true); 
 		
+		System.out.println("DISTANCE: " + sBall.getX());
 		// SCROLLING!!!!
 	    TimerHandler scrollTimer = new TimerHandler(0.003f, true, new ITimerCallback() {
             
@@ -855,21 +865,46 @@ public class Game extends SimpleBaseGameActivity  {
 	void lostTheGame(){
 		lostCounter++;
 		if (lostCounter == 1){
-			// RECORD DATA
-			SharedPreferences userData = this.getSharedPreferences(PREFS, 0);
-			SharedPreferences.Editor editor= userData.edit();
-			
-			editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
-			editor.putInt(COINS_OVERALL, userData.getInt(COINS_OVERALL, 0) + coinTotal);
-			
-			
-			editor.commit();
-			
+			writeData();
 			
 			horizontal_scroll = INITIAL_SCROLL;
 	    	grid = new int[height][width]; 
 	    	finish();
 		}
+	}
+	
+	void writeData(){
+		// RECORD DATA
+		SharedPreferences userData = this.getSharedPreferences(PREFS, 0);
+		SharedPreferences.Editor editor= userData.edit();
+		
+		// Update total score throughout app life
+		editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
+		
+		// Update coin values
+		editor.putInt(COINS_IN_HAND, userData.getInt(COINS_IN_HAND, 0) + coinTotal);
+		editor.putInt(COINS_OVERALL, userData.getInt(COINS_OVERALL, 0) + coinTotal);
+		
+		// Check high score and update with new score if necessary
+		int currentHighestScore = userData.getInt(SCORE_HIGHEST, 0);
+		if (score > currentHighestScore) editor.putInt(SCORE_HIGHEST, score);
+		
+		// Check highest number of coins and update with new number if necessary
+		int currentHighestCoins = userData.getInt(COINS_HIGHEST, 0);
+		if (coinTotal > currentHighestCoins) editor.putInt(COINS_HIGHEST, coinTotal);
+		
+		// Update total distance
+		editor.putFloat(DISTANCE_OVERALL, userData.getFloat(DISTANCE_OVERALL, 0) + sBall.getX());
+		
+		// Check highest distance travelled and update if necessary
+		float currentHighestDistance = userData.getFloat(DISTANCE_HIGHEST, 0);
+		if (sBall.getX() > currentHighestDistance) editor.putFloat(DISTANCE_HIGHEST, sBall.getX());
+		
+		editor.commit();
+		
+	//	System.out.println("HIGH SCORE: " + userData.getInt(SCORE_HIGHEST, 0));
+	//	System.out.println("OVERALL DISTANCE: " + userData.getFloat(DISTANCE_OVERALL,0));
+	//	System.out.println("HIGHEST DISTANCE: " + userData.getFloat(DISTANCE_HIGHEST, 0));
 		
 	}
 } // END OF GAME class definition
