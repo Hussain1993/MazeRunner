@@ -951,7 +951,7 @@ public class Game extends SimpleBaseGameActivity  {
 		float currentHighestDistance = userData.getFloat(DISTANCE_HIGHEST, 0);
 		if (sBall.getX() > currentHighestDistance) editor.putFloat(DISTANCE_HIGHEST, sBall.getX());
 		
-		editor.putInt(NUMBEROFGAMESPLAYED, userData.getInt(NUMBEROFGAMESPLAYED, 0));
+		editor.putInt(NUMBEROFGAMESPLAYED, userData.getInt(NUMBEROFGAMESPLAYED, 0) + 1);
 		editor.commit();
 		
 	//	System.out.println("HIGH SCORE: " + userData.getInt(SCORE_HIGHEST, 0));
