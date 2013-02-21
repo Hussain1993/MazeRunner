@@ -31,6 +31,10 @@ import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import app.mazerunner.gameclasses.Coin;
@@ -56,6 +60,8 @@ public class Game extends SimpleBaseGameActivity  {
  
     public static final String DISTANCE_OVERALL = "DISTANCE_OVERALL";
     public static final String DISTANCE_HIGHEST = "DISTANCE_HIGHEST";
+    
+    private static final int GAME_ENDED_DIALOG = 0;
     
     public static final String BONUS = "BONUS";
     
@@ -507,7 +513,7 @@ public class Game extends SimpleBaseGameActivity  {
             	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    	// lostTheGame();
+                    	lostTheGame();
                     }
                 
             }
@@ -918,7 +924,13 @@ public class Game extends SimpleBaseGameActivity  {
 			
 			horizontal_scroll = INITIAL_SCROLL;
 	    	grid = new int[height][width]; 
-	    	finish();
+	    	runOnUiThread(new Runnable() {
+
+	    		@Override
+	    		public void run() {
+	    			showDialog(GAME_ENDED_DIALOG);
+	    		}
+	    	});
 		}
 	}
 	
@@ -958,5 +970,36 @@ public class Game extends SimpleBaseGameActivity  {
 	//	System.out.println("OVERALL DISTANCE: " + userData.getFloat(DISTANCE_OVERALL,0));
 	//	System.out.println("HIGHEST DISTANCE: " + userData.getFloat(DISTANCE_HIGHEST, 0));
 		
+	}
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 */
+	@Override
+	@Deprecated
+	protected Dialog onCreateDialog(int id) {
+		switch(id)
+		{
+		case GAME_ENDED_DIALOG: return new AlertDialog.Builder(this)
+		.setTitle("GAME OVER")
+		.setMessage("The Game is now Over\n You can now either Play Again or go back to the Home Screen")
+		.setNegativeButton("End", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				startActivity(new Intent(getBaseContext(), MainActivity.class));
+			}
+		})
+		.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				startActivity(new Intent(getBaseContext(), Game.class));
+			}
+		})
+		.create();
+		}
+		return null;
 	}
 } // END OF GAME class definition
