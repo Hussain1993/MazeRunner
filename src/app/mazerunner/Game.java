@@ -58,6 +58,9 @@ public class Game extends SimpleBaseGameActivity  {
     public static final String DISTANCE_HIGHEST = "DISTANCE_HIGHEST";
     
     public static final String BONUS = "BONUS";
+    
+    public static final String NUMBEROFGAMESPLAYED = "NUMBEROFGAMESPLAYED";
+    
 	// The grand-daddy object. Everything graphical takes place on the scene.
 	final Scene scene = new Scene();
 	/*
@@ -178,6 +181,8 @@ public class Game extends SimpleBaseGameActivity  {
 	private int coinTotal;
 	
 	private boolean lostTheGame = false;
+	
+	private boolean init = true;
 	/**
  	* Init method
  	*/
@@ -502,7 +507,7 @@ public class Game extends SimpleBaseGameActivity  {
             	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    	lostTheGame();
+                    	// lostTheGame();
                     }
                 
             }
@@ -609,18 +614,25 @@ public class Game extends SimpleBaseGameActivity  {
 	     
 	     // Handles powers items
 		   
-	     /*
+	     
 	     TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
 	            @Override
 	            public void onTimePassed(TimerHandler pTimerHandler) {
-					if (sBall.getX() > newX){
-						System.out.println("Ball X = " + sBall.getX());
-						createWalls(newX, 0);
+					if (camera.getCenterX() > newWidth/4){
+						System.out.println(camera.getCenterX() + ", " + newWidth/4 + "");
+						for (int i = 2; i < height; i--){
+							if (grid[i][width-1] == 0){
+								System.out.println("EMPTY SPACE FOUND AT " + i + ", " + (width-1) + "");
+								System.out.println("Starting at " + i * 28 + ", " + width * 128 + "");
+								createWalls( newWidth + i * 128,(width) * 128);
+								break;
+							}
+						}
 					}
 	            }
 		    });
 		    scene.registerUpdateHandler(newGridHandler);
-		  */  
+		  
 		    
 	    return scene;
 	} // END OF onCreateScene()
@@ -645,13 +657,16 @@ public class Game extends SimpleBaseGameActivity  {
 	 */
 	void createMazeArray(int x){
 		
+		int xInterval = 128;
+		
+		
 		// Starts in middle of height of grid
 		grid[x][0] = 1;
 		grid[x][1] = 1;
 		
 		// Goes through every column
 		for (int j = 1; j < width-1; j++){
-			int i = 2; // ORIGINAL VALUE IS 1
+			int i = 2; 
 			while (grid[i][j+1] != 1) { // Keeps trying to change numbers until there is at least one '1` to the right
                 if (grid[i][j] == 1){
                     int bla = random.nextInt(3);
@@ -683,15 +698,28 @@ public class Game extends SimpleBaseGameActivity  {
 		} // END OF for loop
 	} // END OF createMazeArray()
 
-	private int newX = 0;
+	private int newWidth = 0;
 	
 	void createWalls(int x, int y){
 		/* Creates the grid array using the Advanced Maze Generation Algorithm (TM) above 
 		 * perfected by the Alty Boys duo (Hani and Sunny). 
 		*/
-		this.createMazeArray(height/2); 
+		
 		int xInterval = 128; // Each wall piece has a width of 128 pixels
 		int yInterval = 128; // ..and a height of 128 pixels. Hence these intervals.
+		int sX = x;
+		if (init){
+			this.createMazeArray(height/2); 
+			init = false;
+		}
+		else {
+			System.out.println("DING DING");
+			// Take the x value and see where it lies
+			int gridNumber = x/xInterval;
+			System.out.println("GRIDNUMBER = " + gridNumber);
+			this.createMazeArray(gridNumber);
+		}
+		
 		
 
 		/**
@@ -701,6 +729,7 @@ public class Game extends SimpleBaseGameActivity  {
 			for (int j = 0; j < width; j++){
 				if(grid[i][j]!=1){ // If Wall
 					sWall[i][j] = new Sprite(x, y, mWallTextureRegion, getVertexBufferObjectManager());
+					System.out.println("Creating a wall at X = " + x + ", Y = " + y + "");
 					currentWalls.add(sWall[i][j]);
 					scene.attachChild(sWall[i][j]);
 				}
@@ -714,7 +743,7 @@ public class Game extends SimpleBaseGameActivity  {
 					 * appearing. 
 					 * EDIT: Changed for now, as we have only implemented two power items at the moment
 					 * 
-					 */
+					 */ 
 					if (randomNo == 0 || randomNo == 1){
 						PowerItem powerItem = new PowerItem(x+48, y+48,
 								mPowerItemTextureRegion[randomNo], 
@@ -757,14 +786,14 @@ public class Game extends SimpleBaseGameActivity  {
 				x = x + xInterval;
 				
 			}
-		//	newX=x;
-			x = 0;
+			
+			x = sX;
 			y = y + yInterval;
 		}
 		
-		
+		newWidth = newWidth + 128 * 50;
 
-		//System.out.println("NewX =" + newX);
+		System.out.println("newWidth =" + newWidth);
 	
 	} // END OF createWalls();
 	
@@ -922,6 +951,7 @@ public class Game extends SimpleBaseGameActivity  {
 		float currentHighestDistance = userData.getFloat(DISTANCE_HIGHEST, 0);
 		if (sBall.getX() > currentHighestDistance) editor.putFloat(DISTANCE_HIGHEST, sBall.getX());
 		
+		editor.putInt(NUMBEROFGAMESPLAYED, userData.getInt(NUMBEROFGAMESPLAYED, 0));
 		editor.commit();
 		
 	//	System.out.println("HIGH SCORE: " + userData.getInt(SCORE_HIGHEST, 0));
