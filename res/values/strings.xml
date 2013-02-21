@@ -10,12 +10,12 @@
     <string name="Exit">Exit</string>
     <string name="Stats">Stats</string>
     <string name="Store">Store</string>
-    <string name="highScore">Highest score: </string>
-    <string name="mostCoins">Most Coins: </string>
-    <string name="highestDistance">Highest Distance: </string>
-    <string name="totalGames">Total games: </string>
-    <string name="totalDistance">Total distance: </string>
-    <string name="totalCoins">Total coins: </string>
-    <string name="bonus">Bonus: </string>
+    <string name="highScore">Highest score:    </string>
+    <string name="mostCoins">Most Coins:    </string>
+    <string name="highestDistance">Highest Distance:    </string>
+    <string name="totalGames">Total games:    </string>
+    <string name="totalDistance">Total distance:    </string>
+    <string name="totalCoins">Total coins:    </string>
+    <string name="bonus">Bonus:    </string>
 
 </resources>
