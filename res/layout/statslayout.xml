@@ -4,4 +4,80 @@
     android:layout_height="match_parent"
     android:background="@drawable/statsbg" >
 
+    <TextView
+        android:id="@+id/statsBonusTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:paddingTop="17dp"
+        android:textColor="@android:color/holo_green_light"
+        android:text="@string/bonus"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/statsBonusTV"
+        android:paddingTop="10dp"
+        android:scrollbars="vertical"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+            
+            <TextView
+                android:id="@+id/highestScoreTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/highScore"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/mostCoinsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mostCoins"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/highestDistanceTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/highestDistance"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/totalGamesTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/totalGames"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/totalDistanceTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/totalDistance"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/totalCoinsTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/totalCoins"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="15dp" />
+        </LinearLayout>
+    </ScrollView>
+
 </RelativeLayout>
