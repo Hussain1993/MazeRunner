@@ -31,14 +31,10 @@ import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
-<<<<<<< HEAD
-
-=======
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
->>>>>>> e58a854fd0e026079b0d3f890ddefbaa70410081
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import app.mazerunner.gameclasses.Coin;
