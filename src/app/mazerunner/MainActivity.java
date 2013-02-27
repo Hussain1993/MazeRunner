@@ -1,9 +1,13 @@
 package app.mazerunner;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,6 +18,9 @@ import android.widget.Button;
  */
 public class MainActivity extends Activity {
 
+	private static final int START_GAME_DIALOG = 0;
+	private static Boolean first;
+	private SharedPreferences prefs;
 	private Button startGameButton;
 	private Button statsButton;
 	private Button storeButton;
@@ -25,6 +32,9 @@ public class MainActivity extends Activity {
     	System.out.println("HElLO WORLD");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = this.getSharedPreferences("app.mazerunner", Context.MODE_PRIVATE);
+        final String booleanKey = "com.mazerunner.booleanKey";
+        first = prefs.getBoolean(booleanKey, true);
         
         //setup startGameButton
         //===============================================================================================
@@ -34,7 +44,16 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), Game.class));
+				if(prefs.getBoolean(booleanKey, true) == true)
+				{
+					prefs.edit().putBoolean(booleanKey, false).apply();
+					showDialog(START_GAME_DIALOG);
+				}
+				else
+				{
+					startActivity(new Intent(getBaseContext(), Game.class));
+				}
+				first = prefs.getBoolean(booleanKey, true);
 			}
 		});
         //================================================================================================    
@@ -95,6 +114,30 @@ public class MainActivity extends Activity {
         //=================================================================================================
     }
 
+    /* (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 */
+	@Override
+	@Deprecated
+	protected Dialog onCreateDialog(int id) {
+		switch(id)
+		{
+		case START_GAME_DIALOG: return new AlertDialog.Builder(this)
+		.setTitle(R.string.instrctions_title)
+		.setMessage(R.string.instrctions)
+		.setPositiveButton("Start Game", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				startActivity(new Intent(getBaseContext(), Game.class));
+				dialog.dismiss();
+			}
+		})
+		.create();
+		}
+		return null;
+	}
+    
     //@Override
     //public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.activity_main, menu);
