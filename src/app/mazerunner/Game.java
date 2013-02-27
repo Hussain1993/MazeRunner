@@ -31,6 +31,7 @@ import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.color.Color;
 import org.andengine.util.debug.Debug;
 
+
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import app.mazerunner.gameclasses.Coin;
@@ -69,7 +70,7 @@ public class Game extends SimpleBaseGameActivity  {
 	private static int CAMERA_WIDTH = 1400;
 	private static int CAMERA_HEIGHT = 800;
 	
-	private static final float INITIAL_SCROLL = 20.0f;
+	private static final float INITIAL_SCROLL = 30.0f; // ORIGINAL IS 20.0f
 
 	// Scrolling speed 
 	private static float horizontal_scroll = INITIAL_SCROLL;
@@ -183,6 +184,11 @@ public class Game extends SimpleBaseGameActivity  {
 	private boolean lostTheGame = false;
 	
 	private boolean init = true;
+	
+	public static final int DISTANCE_BEFORE_EXTENSION = 1280;
+	
+	public static final float SCORE_INCREASE_CONSTANT = 0.1f;
+	public static final float SPEED_INCREASE_CONSTANT = 0.1f;
 	/**
  	* Init method
  	*/
@@ -507,7 +513,7 @@ public class Game extends SimpleBaseGameActivity  {
             	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    	// lostTheGame();
+                    	lostTheGame();
                     }
                 
             }
@@ -524,21 +530,30 @@ public class Game extends SimpleBaseGameActivity  {
             	 * class) to change how often the game speeds up
                  */
             	
-            	if (disableSpeedup== false){
+            	if (disableSpeedup== false && horizontal_scroll < 300){
                    horizontal_scroll = horizontal_scroll 
-                		   + horizontal_scroll * 0.4f;
+                		   + horizontal_scroll * SPEED_INCREASE_CONSTANT;
+                   
+                   
             	}
+            	
+            	System.out.println(horizontal_scroll);
             	 camera.setMaxVelocityX(horizontal_scroll);
                  iterations++;
             }
 	    });
-	    scene.registerUpdateHandler(speedTimer);
+	    
+	    scene.registerUpdateHandler(speedTimer); // COMMENT OUT TO AVOID SPEED INCREASE
 	   
 	    // Score Handler - score changes here
 	    scoreTimer = new TimerHandler(0.25f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-            	if (!doubleScore) score++; else score = score + 2;
+            
+            	int scoreAddition = (int) (1 + horizontal_scroll*SCORE_INCREASE_CONSTANT); // takes speed into account 
+            	
+            	if (!doubleScore) score = score + scoreAddition; else score = score + scoreAddition * 2;
+            	
             	redrawScore();
             	if (iterations < 20){
             		// Rate of increase of score will need to stop growing 
@@ -561,7 +576,7 @@ public class Game extends SimpleBaseGameActivity  {
 	    });
 	    
 	    // Destroys sprites that go off-screen
-	    TimerHandler resourceHandler = new TimerHandler(5.0f, true, new ITimerCallback() {
+	    TimerHandler resourceHandler = new TimerHandler(2.0f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
             	/* Use of iterator allows for concurrent modification
@@ -582,17 +597,6 @@ public class Game extends SimpleBaseGameActivity  {
 	    });
 	    scene.registerUpdateHandler(resourceHandler);
 	    
-	    // Handles powers items
-	    TimerHandler powerHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
-            @Override
-            public void onTimePassed(TimerHandler pTimerHandler) {
-				
-            }
-	    });
-	    scene.registerUpdateHandler(powerHandler);
-	    
-	    // Power Item Handler
-	    
 	    // Revert back to original speed after 5 seconds
 	     speedFixer = new TimerHandler(5.0f, true, new ITimerCallback() {
             @Override
@@ -606,27 +610,33 @@ public class Game extends SimpleBaseGameActivity  {
             	scene.unregisterUpdateHandler(pTimerHandler);
             }
 	    });
-	    
-	    // SpeedupHandler
-	    
-	    
-	    // SpeeddownHandler
-	     
-	     // Handles powers items
 		   
-	     
-	     TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
+	     /*
+	      * Responsible for extending the maze
+	      */
+	     TimerHandler newGridHandler = new TimerHandler(3.0f, true, new ITimerCallback() {
 	            @Override
 	            public void onTimePassed(TimerHandler pTimerHandler) {
-					if (camera.getCenterX() > newWidth/4){
-						System.out.println(camera.getCenterX() + ", " + newWidth/4 + "");
-						for (int i = 2; i < height; i--){
-							if (grid[i][width-1] == 0){
-								System.out.println("EMPTY SPACE FOUND AT " + i + ", " + (width-1) + "");
-								System.out.println("Starting at " + i * 28 + ", " + width * 128 + "");
-								createWalls( newWidth + i * 128,(width) * 128);
-								break;
+	            	boolean foundEmptySpace = false;
+	            	int freeSpace = 0;
+					if (camera.getCenterX() > newWidth-DISTANCE_BEFORE_EXTENSION){
+						System.out.println(camera.getCenterX() + ", " + (newWidth-DISTANCE_BEFORE_EXTENSION) + "");
+						for (int i = 2; i < height; i++){
+							if (grid[i][width-1] == 1){ // Finds an empty path to extend
+							//	System.out.println("EMPTY SPACE FOUND AT y = " + i*128 +""
+								//createWalls( newWidth, i);
+								//i = height;
+								
+								if (!foundEmptySpace){
+									freeSpace = i;
+									foundEmptySpace = true;
+								}
+								
 							}
+						}
+						if (foundEmptySpace == true){
+							System.out.println("FREESPACE!!!! AT " + freeSpace + "");
+							createWalls(newWidth, freeSpace);
 						}
 					}
 	            }
@@ -659,8 +669,13 @@ public class Game extends SimpleBaseGameActivity  {
 		
 		int xInterval = 128;
 		
+		for (int i = 0; i < height; i++){
+			for (int j = 0; j < width; j++){
+				grid[i][j] = 0;
+			}
+		}
 		
-		// Starts in middle of height of grid
+		// Starts in middle of height of grid		
 		grid[x][0] = 1;
 		grid[x][1] = 1;
 		
@@ -693,14 +708,14 @@ public class Game extends SimpleBaseGameActivity  {
                     }
                 }
                 i++;
-                if (i == height-2) 	i = 2; // if bottom of grid is reached, return to top ORIGINAL IS 1
+                if (i == height-2) 	i = 2; // if bottom of grid is reached, return to top 
 			}; // END OF while loop
 		} // END OF for loop
 	} // END OF createMazeArray()
 
 	private int newWidth = 0;
 	
-	void createWalls(int x, int y){
+	void createWalls(int x, int z){
 		/* Creates the grid array using the Advanced Maze Generation Algorithm (TM) above 
 		 * perfected by the Alty Boys duo (Hani and Sunny). 
 		*/
@@ -713,15 +728,19 @@ public class Game extends SimpleBaseGameActivity  {
 			init = false;
 		}
 		else {
-			System.out.println("DING DING");
+		//	System.out.println("DING DING");
 			// Take the x value and see where it lies
-			int gridNumber = x/xInterval;
-			System.out.println("GRIDNUMBER = " + gridNumber);
-			this.createMazeArray(gridNumber);
+		//	double gN = y/yInterval;
+		//	System.out.println(gN);
+		//	int gridNumber = (int) Math.rint(gN);
+		//	System.out.println("GRIDNUMBER = " + gridNumber);
+			this.createMazeArray(z);
 		}
 		
 		
-
+		
+		int y = 0; // EXPERIMENTAL
+		
 		/**
 		 * For loop that generates walls.
 		 */
@@ -729,7 +748,6 @@ public class Game extends SimpleBaseGameActivity  {
 			for (int j = 0; j < width; j++){
 				if(grid[i][j]!=1){ // If Wall
 					sWall[i][j] = new Sprite(x, y, mWallTextureRegion, getVertexBufferObjectManager());
-					System.out.println("Creating a wall at X = " + x + ", Y = " + y + "");
 					currentWalls.add(sWall[i][j]);
 					scene.attachChild(sWall[i][j]);
 				}
