@@ -657,7 +657,7 @@ public class Game extends SimpleBaseGameActivity  {
 	//public static int height = 7; // ORIGINAL WIDTH = 7
 	public static int height = 7;
 	// width of grid
-	public static int width = 20; // ORIGINAL IS 7
+	public static int width = 50; // ORIGINAL IS 7
 	
 	// 2-D grid; 1 values indicate path, 0 indicates wall
 	static int[][] grid = new int[height][width];
