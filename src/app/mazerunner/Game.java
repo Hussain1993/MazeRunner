@@ -518,7 +518,7 @@ public class Game extends SimpleBaseGameActivity  {
             	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    	lostTheGame();
+                    	// lostTheGame();
                     }
                 
             }
@@ -619,7 +619,7 @@ public class Game extends SimpleBaseGameActivity  {
 	     /*
 	      * Responsible for extending the maze
 	      */
-	     TimerHandler newGridHandler = new TimerHandler(3.0f, true, new ITimerCallback() {
+	     TimerHandler newGridHandler = new TimerHandler(1.0f, true, new ITimerCallback() {
 	            @Override
 	            public void onTimePassed(TimerHandler pTimerHandler) {
 	            	boolean foundEmptySpace = false;
@@ -657,7 +657,7 @@ public class Game extends SimpleBaseGameActivity  {
 	//public static int height = 7; // ORIGINAL WIDTH = 7
 	public static int height = 7;
 	// width of grid
-	public static int width = 50;
+	public static int width = 20; // ORIGINAL IS 7
 	
 	// 2-D grid; 1 values indicate path, 0 indicates wall
 	static int[][] grid = new int[height][width];
@@ -814,7 +814,7 @@ public class Game extends SimpleBaseGameActivity  {
 			y = y + yInterval;
 		}
 		
-		newWidth = newWidth + 128 * 50;
+		newWidth = newWidth + 128 * width;
 
 		System.out.println("newWidth =" + newWidth);
 	
