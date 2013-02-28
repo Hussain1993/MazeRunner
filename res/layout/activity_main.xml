@@ -2,76 +2,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center"
-    android:background="@drawable/maze_runner_bg" >
+    android:background="@drawable/maze_runner_bg"
+    android:gravity="center" >
 
-        <GridLayout
-            android:id="@+id/ButtonLayout"
-            android:layout_width="wrap_content"
+    <GridLayout
+        android:id="@+id/ButtonLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="@dimen/padding_large"
+        android:paddingRight="@dimen/padding_large" >
+
+        <Button
+            android:id="@+id/Game"
+            android:layout_width="128dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_large"
-            android:paddingRight="@dimen/padding_large"
-            android:layout_centerHorizontal="true" >
+            android:layout_gravity="left"
+            android:background="@drawable/buttonbg"
+            android:text="@string/Game"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="16dp" />
 
-            <Button
-                android:id="@+id/Game"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/buttonbg"
-                android:text="@string/Game"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="16dp" />
-            
-            <Button
-                android:id="@+id/Stats"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/buttonbg"
-                android:text="@string/Stats"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="16dp" />
-
-            <Button
-                android:id="@+id/Store"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/buttonbg"
-                android:text="@string/Store"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="16dp" />
-        </GridLayout>
-
-        <GridLayout
-            android:id="@+id/SecondButtonLayout"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/Stats"
+            android:layout_width="128dp"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/padding_large"
-            android:paddingRight="@dimen/padding_large"
-            android:layout_below="@+id/ButtonLayout"
-            android:layout_centerInParent="true" >
-                      	    
-            <Button
-                android:id="@+id/achievements"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/buttonbg"
-                android:text="@string/Achievements"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="16dp" />
+            android:layout_gravity="left"
+            android:background="@drawable/buttonbg"
+            android:text="@string/Stats"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="16dp" />
 
-            <Button
-                android:id="@+id/Exit"
-                android:layout_width="128dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/buttonbg"
-                android:text="@string/Exit"
-                android:textColor="@android:color/holo_green_light"
-                android:textSize="16dp" />
-            
-        </GridLayout>
+        <Button
+            android:id="@+id/Exit"
+            android:layout_width="128dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:background="@drawable/buttonbg"
+            android:text="@string/Exit"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="16dp" />
+
+    </GridLayout>
+
 </RelativeLayout>

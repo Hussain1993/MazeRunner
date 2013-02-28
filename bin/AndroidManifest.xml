@@ -31,7 +31,7 @@
         </activity>
         
         <activity 
-            android:name="Options"
+            android:name="app.mazerunner.Achievements"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main">
@@ -52,7 +52,7 @@
        	</activity>
        	
        	<activity 
-      		android:name="Extras"
+      		android:name="app.mazerunner.Store"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main">
