@@ -192,6 +192,10 @@ public class Game extends SimpleBaseGameActivity  {
 	
 	public static final float SCORE_INCREASE_CONSTANT = 0.1f;
 	public static final float SPEED_INCREASE_CONSTANT = 0.05f;
+	
+	SharedPreferences userData;
+	int bonus;
+	
 	/**
  	* Init method
  	*/
@@ -349,6 +353,8 @@ public class Game extends SimpleBaseGameActivity  {
 	 */
 	@Override
 	protected Scene onCreateScene() {
+		userData = this.getSharedPreferences(PREFS, 0);
+		bonus=userData.getInt(BONUS,0);
 		// INITIALISE EVERYTHING
 		 horizontal_scroll = INITIAL_SCROLL;
 		 old_scroll = horizontal_scroll;
@@ -562,7 +568,7 @@ public class Game extends SimpleBaseGameActivity  {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
             
-            	int scoreAddition = (int) (1 + horizontal_scroll*SCORE_INCREASE_CONSTANT); // takes speed into account 
+            	int scoreAddition = (int) (1 + horizontal_scroll*SCORE_INCREASE_CONSTANT)+bonus; // takes speed into account 
             	
             	if (!doubleScore) score = score + scoreAddition; else score = score + scoreAddition * 2;
             	
@@ -952,8 +958,6 @@ public class Game extends SimpleBaseGameActivity  {
 		// Update total score throughout app life
 		editor.putInt(SCORE_OVERALL, userData.getInt(SCORE_OVERALL, 0) + score);
 		
-		editor.putInt(BONUS,1);
-		
 		// Update coin values
 		editor.putInt(COINS_IN_HAND, userData.getInt(COINS_IN_HAND, 0) + coinTotal);
 		editor.putInt(COINS_OVERALL, userData.getInt(COINS_OVERALL, 0) + coinTotal);
@@ -974,6 +978,41 @@ public class Game extends SimpleBaseGameActivity  {
 		if (sBall.getX() > currentHighestDistance) editor.putFloat(DISTANCE_HIGHEST, sBall.getX());
 		
 		editor.putInt(NUMBEROFGAMESPLAYED, userData.getInt(NUMBEROFGAMESPLAYED, 0) + 1);
+		
+		editor.commit();
+		
+		int bonus=0;
+		if(currentHighestScore>5000) {
+			bonus++;
+		}
+		if(currentHighestScore>10000) {
+			bonus++;
+		}
+		if(currentHighestScore>15000) {
+			bonus++;
+		}
+		if(currentHighestScore>20000) {
+			bonus++;
+		}
+		if(currentHighestDistance>40000) {
+			bonus++;
+		}
+		if(currentHighestDistance>60000) {
+			bonus++;
+		}
+		if(currentHighestDistance>100000) {
+			bonus=bonus+2;
+		}
+		if(userData.getFloat(DISTANCE_OVERALL,0)>100000) {
+			bonus++;
+		}
+		if(userData.getFloat(DISTANCE_OVERALL,0)>150000) {
+			bonus++;
+		}
+		if(userData.getFloat(DISTANCE_OVERALL,0)>200000) {
+			bonus=bonus+2;
+		}
+		editor.putInt(BONUS, bonus);
 		editor.commit();
 		
 	//	System.out.println("HIGH SCORE: " + userData.getInt(SCORE_HIGHEST, 0));

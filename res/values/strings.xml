@@ -17,7 +17,7 @@
     <string name="totalDistance">Total distance:    </string>
     <string name="totalCoins">Total coins:    </string>
     <string name="bonus">Bonus:    </string>
-    <string name="instrctions">How to play:\n\nNavigate through the maze using the ball on the leftmost side of the screen.\nThe ball is controlled via touch and drag.\n In this game, the maze rapidly moves while the difficulty continuously fluctuates.\nCoins are collected so that items can be purchased in the game\'s store.\n\nPower ups are scattered throughout the maze to improve your chances of getting a good score.</string> 
+    <string name="instrctions">How to play:\n\nNavigate through the maze using the ball.\nTouch and drag the ball to navigate through the maze.\n In this game, the maze rapidly moves while the difficulty continuously fluctuates.\n\nPower ups are scattered throughout the maze to improve your chances of getting a good score.\n\n If you touch the maze wall or if your ball gets left behind the maze you will lose.</string> 
     <string name="instrctions_title">Maze Runner</string>
 
 </resources>
