@@ -78,11 +78,9 @@ public class Game extends SimpleBaseGameActivity  {
 	private static final float INITIAL_SCROLL = 30.0f; // ORIGINAL IS 20.0f
 
 	// Scrolling speed 
-	private static float horizontal_scroll = INITIAL_SCROLL;
-	private static float old_scroll = horizontal_scroll;
-	
-	/*
-	 *  After every (SPEED_INCREASE_RATE) seconds, the speed of the ball
+	private static float horizontal_scroll;
+	private static float old_scroll;
+	/*  After every (SPEED_INCREASE_RATE) seconds, the speed of the ball
 	 *  will increase by a certain amount.
 	 *  See the 'speedTimer' object in the onCreateScene() method for more.
 	*/
@@ -96,7 +94,7 @@ public class Game extends SimpleBaseGameActivity  {
 	private TimerHandler speedFixer;
 	
 	// Sets the view of the map the game is played in
-	final SmoothCamera camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, horizontal_scroll, 0, 0);
+	final SmoothCamera camera = new SmoothCamera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT, INITIAL_SCROLL, 0, 0);
 	
 	/* 
 	 * Boundaries corresponding to the edges of the screen that the ball
@@ -351,6 +349,9 @@ public class Game extends SimpleBaseGameActivity  {
 	 */
 	@Override
 	protected Scene onCreateScene() {
+		// INITIALISE EVERYTHING
+		 horizontal_scroll = INITIAL_SCROLL;
+		 old_scroll = horizontal_scroll;
 		Sprite backgroundSprite = new Sprite(CAMERA_WIDTH/2, 100, mBackgroundTexttureRegion, getVertexBufferObjectManager());//Set the background of the screen.
 		scene.attachChild(backgroundSprite);//Add the background to the scene
 
@@ -469,8 +470,6 @@ public class Game extends SimpleBaseGameActivity  {
 						//The number of x and y-coordinates to change each time the frame changes
 						normalisedXInterval = Math.abs(endX - currentX) / totalTime;
 						normalisedYInterval = Math.abs(endY - currentY) / totalTime;
-		
-						
 						
 						**/
 						
@@ -636,10 +635,6 @@ public class Game extends SimpleBaseGameActivity  {
 						System.out.println(camera.getCenterX() + ", " + (newWidth-DISTANCE_BEFORE_EXTENSION) + "");
 						for (int i = 2; i < height; i++){
 							if (grid[i][width-1] == 1){ // Finds an empty path to extend
-							//	System.out.println("EMPTY SPACE FOUND AT y = " + i*128 +""
-								//createWalls( newWidth, i);
-								//i = height;
-								
 								if (!foundEmptySpace){
 									freeSpace = i;
 									foundEmptySpace = true;
@@ -741,12 +736,6 @@ public class Game extends SimpleBaseGameActivity  {
 			init = false;
 		}
 		else {
-		//	System.out.println("DING DING");
-			// Take the x value and see where it lies
-		//	double gN = y/yInterval;
-		//	System.out.println(gN);
-		//	int gridNumber = (int) Math.rint(gN);
-		//	System.out.println("GRIDNUMBER = " + gridNumber);
 			this.createMazeArray(z);
 		}
 		
@@ -879,10 +868,7 @@ public class Game extends SimpleBaseGameActivity  {
 					break;
 				 default: break;
 				}
-				// 
-			
 				
-				//
 				scene.detachChild(powerItem);
 				pIterator.remove();
 			//	System.out.println("Number of power-items: " + currentPowerItems.size());
@@ -919,9 +905,7 @@ public class Game extends SimpleBaseGameActivity  {
 				default:
 					break;
 				}
-				// 
 				
-				//
 				scene.detachChild(coin);
 				cIterator.remove();
 			}
@@ -943,6 +927,7 @@ public class Game extends SimpleBaseGameActivity  {
 	 * Controls what happens when one of the losing conditions occurs.
 	 */
 	void lostTheGame(){
+		scene.unregisterUpdateHandler(scoreTimer);
 		lostCounter++;
 		if (lostCounter == 1){
 			writeData();
@@ -1006,13 +991,15 @@ public class Game extends SimpleBaseGameActivity  {
 		{
 		case GAME_ENDED_DIALOG: return new AlertDialog.Builder(this)
 		.setTitle("GAME OVER")
+		.setCancelable(false)
 		.setMessage("The Game is now Over\n You can now either Play Again or go back to the Home Screen")
 		.setNegativeButton("End", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				startActivity(new Intent(getBaseContext(), MainActivity.class));
+				finish();
+				//startActivity(new Intent(getBaseContext(), MainActivity.class));
 			}
 		})
 		.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
@@ -1020,6 +1007,7 @@ public class Game extends SimpleBaseGameActivity  {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				finish();
 				startActivity(new Intent(getBaseContext(), Game.class));
 			}
 		})
