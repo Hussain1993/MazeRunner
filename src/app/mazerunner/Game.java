@@ -193,7 +193,7 @@ public class Game extends SimpleBaseGameActivity  {
 	public static final int DISTANCE_BEFORE_EXTENSION = 1280;
 	
 	public static final float SCORE_INCREASE_CONSTANT = 0.1f;
-	public static final float SPEED_INCREASE_CONSTANT = 0.1f;
+	public static final float SPEED_INCREASE_CONSTANT = 0.05f;
 	/**
  	* Init method
  	*/
@@ -428,7 +428,7 @@ public class Game extends SimpleBaseGameActivity  {
 				
 				// COMMENTED OUT FOR NOW - SUNNY
 				
-				if (!animating) {
+				//if (!animating) {
 					if (!thereIsCollision(this)){
 						//Every 10 consecutive non-colliding touch events, store the coordinates of the ball
 						if (count == 10){
@@ -445,7 +445,9 @@ public class Game extends SimpleBaseGameActivity  {
 						checkCoinTouched();
 					}
 					else {
-						System.out.println("OnAreaTouched: Collision detected, trying to ignore touches for now");
+						
+						/** TURNING OFF COLLISION DETECTION
+						 * System.out.println("OnAreaTouched: Collision detected, trying to ignore touches for now");
 						//Collision detected
 						//If the ball collides, animate to previous "safe" location.
 						count = 0;
@@ -461,18 +463,26 @@ public class Game extends SimpleBaseGameActivity  {
 						subtractX = endX < currentX; //Whether or not we are subtracting from or adding to the
 						subtractY = endY < currentY; //current value to get to the end-position
 						
-						/*
-						 * The line below calculates the time (in terms of number of frames)
-						 * needed for the ball to travel - this 'time' is obtained as a function
-						 * of the total distance to be travelled by the ball (simple Pythagorean a^2 + b^2 = c^2)
-						 * divided by 5. (We could experiment with this value, up to you guys)
-						 */
+						
 						totalTime = (int)(Math.sqrt(Math.pow((endX - currentX), 2) + Math.pow((endY - currentY), 2)) / 5);
 						
 						//The number of x and y-coordinates to change each time the frame changes
 						normalisedXInterval = Math.abs(endX - currentX) / totalTime;
 						normalisedYInterval = Math.abs(endY - currentY) / totalTime;
+		
 						
+						
+						**/
+						
+						/*
+						 * The line below calculates the time (in terms of number of frames)
+						 * needed for the ball to travel - this 'time' is obtained as a function
+						 * of the total distance to be travelled by the ball (simple Pythagorean a^2 + b^2 = c^2)
+						 * divided by 5. (We could experiment with this value, up to you guys)
+						 * totalTime = (int)(Math.sqrt(Math.pow((endX - currentX), 2) + Math.pow((endY - currentY), 2)) / 5);
+						 */
+						
+						lostTheGame(); // YOU LOSE THE GAME IF YOU HIT THE WALL. OH WELL
 						/**
 						// Recreates grid, but isn't this a bit processor-intensive?
 						grid = new int[height][width]; 
@@ -481,7 +491,7 @@ public class Game extends SimpleBaseGameActivity  {
 						**/
 						return false;
 					}
-				}
+				//}
 				
 				/*
 				 * To make sure that the ball does not cross the edges of the screen
@@ -518,7 +528,7 @@ public class Game extends SimpleBaseGameActivity  {
             	 
                     // If the ball goes off-screen...
                     if (camera.getCenterX()-sBall.getX()-sBall.getWidth() > CAMERA_WIDTH/2){
-                    	// lostTheGame();
+                    	lostTheGame();
                     }
                 
             }
@@ -538,8 +548,6 @@ public class Game extends SimpleBaseGameActivity  {
             	if (disableSpeedup== false && horizontal_scroll < 300){
                    horizontal_scroll = horizontal_scroll 
                 		   + horizontal_scroll * SPEED_INCREASE_CONSTANT;
-                   
-                   
             	}
             	
             	System.out.println(horizontal_scroll);
@@ -657,7 +665,7 @@ public class Game extends SimpleBaseGameActivity  {
 	//public static int height = 7; // ORIGINAL WIDTH = 7
 	public static int height = 7;
 	// width of grid
-	public static int width = 50; // ORIGINAL IS 7
+	public static int width = 50; 
 	
 	// 2-D grid; 1 values indicate path, 0 indicates wall
 	static int[][] grid = new int[height][width];
